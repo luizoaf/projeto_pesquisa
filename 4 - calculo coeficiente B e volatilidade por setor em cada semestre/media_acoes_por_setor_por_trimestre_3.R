@@ -94,19 +94,6 @@ dado_semestre_retorna_media_serie_retornos_por_setor = function(semestre){
 }
 
 faixa_temporal = unique(dados$datas)
-# setores_2008_1 = dado_semestre_retorna_media_serie_retornos_por_setor("2008.1")
-# setores_2008_2 = dado_semestre_retorna_media_serie_retornos_por_setor("2008.2")
-# setores_2009_1 = dado_semestre_retorna_media_serie_retornos_por_setor("2009.1")
-# setores_2009_2 = dado_semestre_retorna_media_serie_retornos_por_setor("2009.2")
-# setores_2010_1 = dado_semestre_retorna_media_serie_retornos_por_setor("2010.1")
-# setores_2010_2 = dado_semestre_retorna_media_serie_retornos_por_setor("2010.2")
-# setores_2011_1 = dado_semestre_retorna_media_serie_retornos_por_setor("2011.1")
-# setores_2011_2 = dado_semestre_retorna_media_serie_retornos_por_setor("2011.2")
-# setores_2012_1 = dado_semestre_retorna_media_serie_retornos_por_setor("2012.1")
-# setores_2012_2 = dado_semestre_retorna_media_serie_retornos_por_setor("2012.2")
-# setores_2013_1 = dado_semestre_retorna_media_serie_retornos_por_setor("2013.1")
-# setores_2013_2 = dado_semestre_retorna_media_serie_retornos_por_setor("2013.2")
-# setores_2014_1 = dado_semestre_retorna_media_serie_retornos_por_setor("2014.1")
 
 grupo_coeficiente_B = data.frame()
 eixo_x_y = data.frame()
