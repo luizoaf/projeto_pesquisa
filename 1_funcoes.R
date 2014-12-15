@@ -201,8 +201,12 @@ calcula_volatilidade = function(serie_retorno){
   return(mean(serie_retorno))
 }
 
-resultado_funcao_exponencial = function(x,coeficiente_B){
-  return(exp(x*-coeficiente_B))
+resultado_funcao_exponencial = function(a,x,coeficiente_B){
+#   a*exp(b*x)
+#   a*exp(coefB*x)
+  return(a*exp(x*-coeficiente_B))
+#   return(exp(x*-coeficiente_B))
+  
 }
 
 intervalos_confianca<-function(amostra){
@@ -261,7 +265,7 @@ correcao_coluna_setores = function(df_setores){
 
 plot_previsao_com_B_e_exponencial = function(eixo_x_frequencias,exponencial){
   #   png(paste("Coeficiente B ",coeficiente_B, " SSE ",sse," Incremento ",incremento,".png",sep=""))
-  plot(main=paste("Coeficiente B: ",coeficiente_B,"Volatilidade",volatilidade, "\nSSE:",sse),funcao_distribuicao_probabilidade(serie),type="l",ylab="Densidade",xlab="Série de retornos")
+  plot(main=paste("Coeficiente B: ",coeficiente_B,"Volatilidade",volatilidade, "\nSSE:",sse," a: ",a),funcao_distribuicao_probabilidade(serie),type="l",ylab="Densidade",xlab="Série de retornos")
   lines(exponencial~eixo_x_frequencias,col="blue")
   legend("topright", inset=.05, c("F.D.P.","Exponencial"), lwd= 3,col = c("black","blue"), horiz=TRUE)
   #   dev.off()

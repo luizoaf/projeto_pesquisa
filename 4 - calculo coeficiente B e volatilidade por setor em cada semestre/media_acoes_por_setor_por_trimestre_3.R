@@ -118,9 +118,9 @@ for(periodo in faixa_temporal){
     #     colnames(grupo_coeficiente_B) = c("coeficiente_B","sse","volatilidade","mape")
     
     #     eixo_x_y = rbind(eixo_x_y, cbind(funcao_distribuicao_probabilidade(serie),exponencial,coeficiente_B,sse,volatilidade,mape,i))
-    eixo_x_y = rbind(eixo_x_y, cbind(eixo_x_frequencias,alvo,previsao,coeficiente_B,sse,volatilidade,i))
+    eixo_x_y = rbind(eixo_x_y, cbind(eixo_x_frequencias,alvo,previsao,coeficiente_B,a,sse,volatilidade,i))
     #,periodo,setor,coeficiente_B*volatilidade))
-    colnames(eixo_x_y) = c("eixo_x_frequencias","alvo","previsao","coeficiente_B","sse","volatilidade","i")
+    colnames(eixo_x_y) = c("eixo_x_frequencias","alvo","previsao","coeficiente_B","a","sse","volatilidade","i")
     #,"tempo","setor","b_x_volatilidade")
     
     #     print(faixa_temporal_por_setores)
@@ -158,7 +158,7 @@ pior_5 = subset(eixo_x_y,eixo_x_y$i==15)
 # pior_1$coeficiente_B
 atual = pior_4[,2]
 previsao = pior_4[,3]
-plot(pior_4[,1:2],type="l")
+plot(pior_4[,1:2],type="l",ylim=c(0,2))
 lines(pior_4[,c(1,3)],col="blue")
 pior_4$sse
 
