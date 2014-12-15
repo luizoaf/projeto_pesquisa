@@ -71,7 +71,7 @@ setores_100_porcento_por_periodo = function(periodo){
 dado_semestre_retorna_media_serie_retornos_por_setor = function(semestre){
   semestre_acoes = subset(dados,dados$datas==semestre)
   serie_retornos_por_semestre = semestre_acoes[,2:ncol(semestre_acoes)]
-#   serie_retornos_por_semestre = cria_tabela_serie_retornos_de_todas_as_acoes(semestre_acoes)
+  #   serie_retornos_por_semestre = cria_tabela_serie_retornos_de_todas_as_acoes(semestre_acoes)
   setores_media_acoes = data.frame(1)
   setores_100_porcento = setores_100_porcento_por_periodo(semestre)
   for( setor in setores_100_porcento){
@@ -84,8 +84,8 @@ dado_semestre_retorna_media_serie_retornos_por_setor = function(semestre){
     }
     setores_media_acoes = cbind(setores_media_acoes,medias_por_setor)
   }
-#   setores_media_acoes = setores_media_acoes[,-1]
-#   head(setores_media_acoes)
+  #   setores_media_acoes = setores_media_acoes[,-1]
+  #   head(setores_media_acoes)
   ### mudanca de ordem ###
   setores_media_acoes = cria_tabela_serie_retornos_de_todas_as_acoes(setores_media_acoes)
   
@@ -126,13 +126,15 @@ for(periodo in faixa_temporal){
     faixa_temporal_por_setores[i] = periodo
     serie = serie_retornos_normalizado[,coluna]
     source("3_define_coeficiente_B.R")
-    grupo_coeficiente_B = rbind(grupo_coeficiente_B,c(coeficiente_B,sse,volatilidade,mape))
-    colnames(grupo_coeficiente_B) = c("coeficiente_B","sse","volatilidade","mape")
+    #     grupo_coeficiente_B = rbind(grupo_coeficiente_B,c(coeficiente_B,sse,volatilidade))
+    #,mape))
+    #     colnames(grupo_coeficiente_B) = c("coeficiente_B","sse","volatilidade","mape")
     
-    eixo_x_y = rbind(eixo_x_y, cbind(funcao_distribuicao_probabilidade(serie),exponencial,coeficiente_B,sse,volatilidade,mape,i))
-                                     #,periodo,setor,coeficiente_B*volatilidade))
-    colnames(eixo_x_y) = c("valor_serie_retorno_eixo_x","frequencia_eixo_y","exponencial","coeficiente_B","sse","volatilidade","mape","i")
-                           #,"tempo","setor","b_x_volatilidade")
+    #     eixo_x_y = rbind(eixo_x_y, cbind(funcao_distribuicao_probabilidade(serie),exponencial,coeficiente_B,sse,volatilidade,mape,i))
+    eixo_x_y = rbind(eixo_x_y, cbind(eixo_x_frequencias,alvo,previsao,coeficiente_B,sse,volatilidade,i))
+    #,periodo,setor,coeficiente_B*volatilidade))
+    colnames(eixo_x_y) = c("eixo_x_frequencias","alvo","previsao","coeficiente_B","sse","volatilidade","i")
+    #,"tempo","setor","b_x_volatilidade")
     
     #     print(faixa_temporal_por_setores)
     #     print(paste("periodo: ",periodo,"coluna: ",i))
@@ -142,13 +144,13 @@ for(periodo in faixa_temporal){
     # write.table(grupo_coeficiente_B,paste(names(serie_retornos_normalizado)[i],grupo_janelamento,"combinacao_janelamento_30_incrementos_0_01_0_28_todas_acoes.csv"),row.names=F,sep=",")
   }
 }
-grupo_coeficiente_B = cbind(faixa_temporal_por_setores,grupo_coeficiente_B)
-grupo_coeficiente_B = cbind(colunas,grupo_coeficiente_B)
-grupo_coeficiente_B$b_volatilidade = grupo_coeficiente_B$coeficiente_B*grupo_coeficiente_B$volatilidade
+# grupo_coeficiente_B = cbind(faixa_temporal_por_setores,grupo_coeficiente_B)
+# grupo_coeficiente_B = cbind(colunas,grupo_coeficiente_B)
+# grupo_coeficiente_B$b_volatilidade = grupo_coeficiente_B$coeficiente_B*grupo_coeficiente_B$volatilidade
 
-plot(grupo_coeficiente_B$b_volatilidade,ylim=c(0,2))
-boxplot(main="SSE",grupo_coeficiente_B$sse)
-boxplot(main="MAPE",grupo_coeficiente_B$mape)
+# plot(grupo_coeficiente_B$b_volatilidade,ylim=c(0,2))
+boxplot(main="SSE",eixo_x_y$sse)
+# boxplot(main="MAPE",eixo_x_y$mape)
 
 eixo_x_y = eixo_x_y[order(eixo_x_y$sse,decreasing=T),]
 # 2,35,55,88,3
@@ -166,16 +168,21 @@ pior_3 = subset(eixo_x_y,eixo_x_y$i==28)
 pior_4 = subset(eixo_x_y,eixo_x_y$i==3)
 pior_5 = subset(eixo_x_y,eixo_x_y$i==15)
 
-pior_1$coeficiente_B
+# pior_1$coeficiente_B
+atual = pior_4[,2]
+previsao = pior_4[,3]
+plot(pior_4[,1:2],type="l")
+lines(pior_4[,c(1,3)],col="blue")
+pior_4$sse
 
-plot(pior_5[,1:2])
-lines(pior_5[,c(1,3)],col="blue")
-# 
-write.csv(pior_1,file="pior_1.csv")
-write.csv(pior_2,file="pior_2.csv")
-write.csv(pior_3,file="pior_3.csv")
-write.csv(pior_4,file="pior_4.csv")
-write.csv(pior_5,file="pior_5.csv")
+# sum(( atual-previsao)^2)
+
+# # 
+# write.csv(pior_1,file="pior_1.csv")
+# write.csv(pior_2,file="pior_2.csv")
+# write.csv(pior_3,file="pior_3.csv")
+# write.csv(pior_4,file="pior_4.csv")
+# write.csv(pior_5,file="pior_5.csv")
 
 # write.csv(grupo_coeficiente_B,file="por_ano_0_35_b_volatilidade_sse_mape_setores.csv")
 # write.csv(grupo_coeficiente_B,file="por_ano_b_volatilidade_sse_mape_setores.csv")

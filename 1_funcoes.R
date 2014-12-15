@@ -201,7 +201,7 @@ calcula_volatilidade = function(serie_retorno){
   return(mean(serie_retorno))
 }
 
-resultado_funcao_exponencial = function(x){
+resultado_funcao_exponencial = function(x,coeficiente_B){
   return(exp(x*-coeficiente_B))
 }
 
