@@ -97,7 +97,7 @@ faixa_temporal = unique(dados$datas)
 
 grupo_coeficiente_B = data.frame()
 eixo_x_y = data.frame()
-eixo_x_y_strings = data.frame()
+eixo_x_y_sem_a = data.frame()
 # incremento_fdp = seq(from=0.01,to=0.1,by=0.01) 
 # incremento_fdp = 0.05
 i=1
@@ -121,6 +121,15 @@ for(periodo in faixa_temporal){
     eixo_x_y = rbind(eixo_x_y, cbind(eixo_x_frequencias,alvo,previsao,coeficiente_B,a,sse,volatilidade,i))
     #,periodo,setor,coeficiente_B*volatilidade))
     colnames(eixo_x_y) = c("eixo_x_frequencias","alvo","previsao","coeficiente_B","a","sse","volatilidade","i")
+    
+    
+    
+    a = 1
+    source("3_define_coeficiente_B_sem_a.R")
+    eixo_x_y_sem_a = rbind(eixo_x_y_sem_a, cbind(eixo_x_frequencias,alvo,previsao,coeficiente_B,a,sse,volatilidade,i))
+    #,periodo,setor,coeficiente_B*volatilidade))
+    colnames(eixo_x_y_sem_a) = c("eixo_x_frequencias","alvo","previsao","coeficiente_B","a","sse","volatilidade","i")
+    
     #,"tempo","setor","b_x_volatilidade")
     
     #     print(faixa_temporal_por_setores)
@@ -136,89 +145,92 @@ for(periodo in faixa_temporal){
 # grupo_coeficiente_B$b_volatilidade = grupo_coeficiente_B$coeficiente_B*grupo_coeficiente_B$volatilidade
 
 # plot(grupo_coeficiente_B$b_volatilidade,ylim=c(0,2))
-boxplot(main="SSE",eixo_x_y$sse)
+# unique(eixo_x_y$i[eixo_x_y_sem_a$sse < eixo_x_y$sse])
+boxplot(main="SSE",data.frame(com_a = eixo_x_y$sse,sem_a = eixo_x_y_sem_a$sse))
+# boxplot(main="SSE",eixo_x_y_sem_a$sse)
 # boxplot(main="MAPE",eixo_x_y$mape)
-
-eixo_x_y = eixo_x_y[order(eixo_x_y$sse,decreasing=T),]
-# 2,35,55,88,3
-# head(eixo_x_y,n=200)
+# 
+# eixo_x_y = eixo_x_y[order(eixo_x_y$sse,decreasing=T),]
+# # 2,35,55,88,3
+# # head(eixo_x_y,n=200)
 unique(head(eixo_x_y$i,n=250))
-pior_1 = subset(eixo_x_y,eixo_x_y$i==2)[,1:3]
-pior_2 = subset(eixo_x_y,eixo_x_y$i==35)[,1:3]
-pior_3 = subset(eixo_x_y,eixo_x_y$i==28)[,1:3]
-pior_4 = subset(eixo_x_y,eixo_x_y$i==3)[,1:3]
-pior_5 = subset(eixo_x_y,eixo_x_y$i==15)[,1:3]
-
-pior_1 = subset(eixo_x_y,eixo_x_y$i==2)
-pior_2 = subset(eixo_x_y,eixo_x_y$i==35)
-pior_3 = subset(eixo_x_y,eixo_x_y$i==28)
-pior_4 = subset(eixo_x_y,eixo_x_y$i==3)
-pior_5 = subset(eixo_x_y,eixo_x_y$i==15)
-
-# pior_1$coeficiente_B
-atual = pior_4[,2]
-previsao = pior_4[,3]
-plot(pior_4[,1:2],type="l",ylim=c(0,2))
-lines(pior_4[,c(1,3)],col="blue")
-pior_4$sse
-
-# sum(( atual-previsao)^2)
-
+# pior_1 = subset(eixo_x_y,eixo_x_y$i==2)[,1:3]
+# pior_2 = subset(eixo_x_y,eixo_x_y$i==35)[,1:3]
+# pior_3 = subset(eixo_x_y,eixo_x_y$i==28)[,1:3]
+# pior_4 = subset(eixo_x_y,eixo_x_y$i==3)[,1:3]
+# pior_5 = subset(eixo_x_y,eixo_x_y$i==15)[,1:3]
+# 
+# pior_1 = subset(eixo_x_y,eixo_x_y$i==2)
+pior_2 = subset(eixo_x_y,eixo_x_y$i==88)
+serie=pior_2$alvo
+# pior_3 = subset(eixo_x_y,eixo_x_y$i==28)
+# pior_4 = subset(eixo_x_y,eixo_x_y$i==3)
+# pior_5 = subset(eixo_x_y,eixo_x_y$i==15)
+# 
+# # pior_1$coeficiente_B
+# atual = pior_4[,2]
+# previsao = pior_4[,3]
+# plot(pior_4[,1:2],type="l",ylim=c(0,2))
+# lines(pior_4[,c(1,3)],col="blue")
+# pior_4$sse
+# 
+# # sum(( atual-previsao)^2)
+# 
+# # # 
+# # write.csv(pior_1,file="pior_1.csv")
+# # write.csv(pior_2,file="pior_2.csv")
+# # write.csv(pior_3,file="pior_3.csv")
+# # write.csv(pior_4,file="pior_4.csv")
+# # write.csv(pior_5,file="pior_5.csv")
+# 
+# # write.csv(grupo_coeficiente_B,file="por_ano_0_35_b_volatilidade_sse_mape_setores.csv")
+# # write.csv(grupo_coeficiente_B,file="por_ano_b_volatilidade_sse_mape_setores.csv")
+# # write.csv(grupo_coeficiente_B,file="por_semestre_b_volatilidade_sse_mape_setores.csv")
+# # write.csv(grupo_coeficiente_B,file="por_trimestre_b_volatilidade_sse_mape_setores.csv")
+# # write.csv(grupo_coeficiente_B,file="por_mensal_b_volatilidade_sse_mape_setores.csv")
+# 
+# # dados = read.csv("por_ano_b_volatilidade_sse_mape_setores.csv")
+# # dados = read.csv("por_semestre_b_volatilidade_sse_mape_setores.csv")
+# # dados = read.csv("por_trimestre_b_volatilidade_sse_mape_setores.csv")
+# # dados = read.csv("por_mensal_b_volatilidade_sse_mape_setores.csv")
+# # boxplot(main="MAPE mensal",dados$mape)
+# 
 # # 
-# write.csv(pior_1,file="pior_1.csv")
-# write.csv(pior_2,file="pior_2.csv")
-# write.csv(pior_3,file="pior_3.csv")
-# write.csv(pior_4,file="pior_4.csv")
-# write.csv(pior_5,file="pior_5.csv")
-
-# write.csv(grupo_coeficiente_B,file="por_ano_0_35_b_volatilidade_sse_mape_setores.csv")
-# write.csv(grupo_coeficiente_B,file="por_ano_b_volatilidade_sse_mape_setores.csv")
-# write.csv(grupo_coeficiente_B,file="por_semestre_b_volatilidade_sse_mape_setores.csv")
-# write.csv(grupo_coeficiente_B,file="por_trimestre_b_volatilidade_sse_mape_setores.csv")
-# write.csv(grupo_coeficiente_B,file="por_mensal_b_volatilidade_sse_mape_setores.csv")
-
-# dados = read.csv("por_ano_b_volatilidade_sse_mape_setores.csv")
-# dados = read.csv("por_semestre_b_volatilidade_sse_mape_setores.csv")
-# dados = read.csv("por_trimestre_b_volatilidade_sse_mape_setores.csv")
-# dados = read.csv("por_mensal_b_volatilidade_sse_mape_setores.csv")
-# boxplot(main="MAPE mensal",dados$mape)
-
-# 
-# plot(grupo_coeficiente_B$b_volatilidade,ylim=c(0,2.5),ylab="Volatility x Coefficient B",xlab="Indices")
-# intercept = regressao.simples(1:(length(grupo_coeficiente_B$b_volatilidade)),(grupo_coeficiente_B$b_volatilidade))[1]
-# slope = regressao.simples(1:(length(grupo_coeficiente_B$b_volatilidade)),(grupo_coeficiente_B$b_volatilidade))[2]
-# abline(a=intercept,b =slope,col=2)
-# 
-# 
-# 
-# 
-# plot((grupo_coeficiente_B$coeficiente_B[order(grupo_coeficiente_B$coeficiente_B,decreasing=T)]),xlab="Volatility",ylab="Coefficient B",ylim=c(0, 10),col="red")
-# points((grupo_coeficiente_B$volatilidade[order(grupo_coeficiente_B$volatilidade,decreasing=F)]),xlab="Indice",ylab="Volatility",col="blue")
-# 
-# com_b_menor_que_2 = grupo_coeficiente_B[grupo_coeficiente_B$coeficiente_B<2,]
-# plot(com_b_menor_que_2$coeficiente_B~com_b_menor_que_2$volatilidade,xlab="Volatility",ylab="Coefficient B")
-# 
-# plot(grupo_coeficiente_B$coeficiente_B~grupo_coeficiente_B$volatilidade,xlab="Volatility",ylab="Coefficient B")
-# 
-# 
-# retorna_cluster = function(semestre){
-#   dados = subset(com_b_menor_que_2,com_b_menor_que_2$faixa_temporal_por_setores==semestre)
-#   k=2
-#   iter = 45
-#   dados = dados[,c(3,5)]
-#   
-#   km = kmeans (x = dados, centers = k, iter.max = iter)
-#   dados$cluster = km$cluster
-#   
-#   plot(main= paste("Para K = ",k,sep =""),dados$coeficiente_B~dados$volatilidade,xlab="Volatility",ylab="Coefficient B", col = km$cluster,pch = 20, cex = 0.9)
-#   points(km$centers[,1]~km$centers[,2],col=3, pch = 8,lwd=3)
-#   # points(km$centers,col=1:k, pch = 8,lwd=3)
-#   
-#   dados = dados[order(dados$cluster),]
-#   # dados
-#   return(dados$cluster)
-# }
-# semestre = "2014.1"
-# cluster_2014_1 = cbind(data.frame(cluster = retorna_cluster(semestre)),com_b_menor_que_2[com_b_menor_que_2$faixa_temporal_por_setores==semestre,c("colunas","coeficiente_B","volatilidade","faixa_temporal_por_setores" )])
-# 
-# write.table(cluster_2014_1,"cluster_2014_1.csv",row.names=F,sep=",")
+# # plot(grupo_coeficiente_B$b_volatilidade,ylim=c(0,2.5),ylab="Volatility x Coefficient B",xlab="Indices")
+# # intercept = regressao.simples(1:(length(grupo_coeficiente_B$b_volatilidade)),(grupo_coeficiente_B$b_volatilidade))[1]
+# # slope = regressao.simples(1:(length(grupo_coeficiente_B$b_volatilidade)),(grupo_coeficiente_B$b_volatilidade))[2]
+# # abline(a=intercept,b =slope,col=2)
+# # 
+# # 
+# # 
+# # 
+# # plot((grupo_coeficiente_B$coeficiente_B[order(grupo_coeficiente_B$coeficiente_B,decreasing=T)]),xlab="Volatility",ylab="Coefficient B",ylim=c(0, 10),col="red")
+# # points((grupo_coeficiente_B$volatilidade[order(grupo_coeficiente_B$volatilidade,decreasing=F)]),xlab="Indice",ylab="Volatility",col="blue")
+# # 
+# # com_b_menor_que_2 = grupo_coeficiente_B[grupo_coeficiente_B$coeficiente_B<2,]
+# # plot(com_b_menor_que_2$coeficiente_B~com_b_menor_que_2$volatilidade,xlab="Volatility",ylab="Coefficient B")
+# # 
+# # plot(grupo_coeficiente_B$coeficiente_B~grupo_coeficiente_B$volatilidade,xlab="Volatility",ylab="Coefficient B")
+# # 
+# # 
+# # retorna_cluster = function(semestre){
+# #   dados = subset(com_b_menor_que_2,com_b_menor_que_2$faixa_temporal_por_setores==semestre)
+# #   k=2
+# #   iter = 45
+# #   dados = dados[,c(3,5)]
+# #   
+# #   km = kmeans (x = dados, centers = k, iter.max = iter)
+# #   dados$cluster = km$cluster
+# #   
+# #   plot(main= paste("Para K = ",k,sep =""),dados$coeficiente_B~dados$volatilidade,xlab="Volatility",ylab="Coefficient B", col = km$cluster,pch = 20, cex = 0.9)
+# #   points(km$centers[,1]~km$centers[,2],col=3, pch = 8,lwd=3)
+# #   # points(km$centers,col=1:k, pch = 8,lwd=3)
+# #   
+# #   dados = dados[order(dados$cluster),]
+# #   # dados
+# #   return(dados$cluster)
+# # }
+# # semestre = "2014.1"
+# # cluster_2014_1 = cbind(data.frame(cluster = retorna_cluster(semestre)),com_b_menor_que_2[com_b_menor_que_2$faixa_temporal_por_setores==semestre,c("colunas","coeficiente_B","volatilidade","faixa_temporal_por_setores" )])
+# # 
+# # write.table(cluster_2014_1,"cluster_2014_1.csv",row.names=F,sep=",")

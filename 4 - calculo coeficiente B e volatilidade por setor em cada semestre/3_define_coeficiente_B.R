@@ -153,5 +153,5 @@ a = coeficiente_B_e_erros_menor_sse$a
 previsao = resultado_funcao_exponencial(a,eixo_x_frequencias,coeficiente_B)
 
 # png(filename=paste(sse,".png",sep=""),bg="transparent")
-plot_previsao_com_B_e_exponencial(eixo_x_frequencias,previsao)
+# plot_previsao_com_B_e_exponencial(eixo_x_frequencias,previsao)
 # dev.off()
