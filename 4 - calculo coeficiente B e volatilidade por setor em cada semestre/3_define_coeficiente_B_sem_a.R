@@ -57,5 +57,5 @@ previsao = resultado_funcao_exponencial(1,eixo_x_frequencias,coeficiente_B)
 
 # png(filename=paste(sse,".png",sep=""),bg="transparent")
 # a= 1
-# plot_previsao_com_B_e_exponencial(eixo_x_frequencias,previsao)
+print(plot_previsao_com_B_e_exponencial(eixo_x_frequencias,previsao))
 # dev.off()

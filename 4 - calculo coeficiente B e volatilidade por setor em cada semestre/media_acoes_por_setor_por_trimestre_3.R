@@ -104,7 +104,7 @@ i=1
 colunas = c()
 faixa_temporal_por_setores = c()
 # periodo = faixa_temporal[1]
-# coluna = 1
+# coluna = 4
 for(periodo in faixa_temporal){
   serie_retornos_normalizado = dado_semestre_retorna_media_serie_retornos_por_setor(periodo)
   
@@ -112,16 +112,18 @@ for(periodo in faixa_temporal){
     colunas[i] = names(serie_retornos_normalizado)[coluna]
     faixa_temporal_por_setores[i] = periodo
     serie = serie_retornos_normalizado[,coluna]
-    source("3_define_coeficiente_B.R")
-    #     grupo_coeficiente_B = rbind(grupo_coeficiente_B,c(coeficiente_B,sse,volatilidade))
-    #,mape))
-    #     colnames(grupo_coeficiente_B) = c("coeficiente_B","sse","volatilidade","mape")
     
-    #     eixo_x_y = rbind(eixo_x_y, cbind(funcao_distribuicao_probabilidade(serie),exponencial,coeficiente_B,sse,volatilidade,mape,i))
-    eixo_x_y = rbind(eixo_x_y, cbind(eixo_x_frequencias,alvo,previsao,coeficiente_B,a,sse,volatilidade,i))
-    #,periodo,setor,coeficiente_B*volatilidade))
-    colnames(eixo_x_y) = c("eixo_x_frequencias","alvo","previsao","coeficiente_B","a","sse","volatilidade","i")
+    png(filename=paste(i,".png",sep=""),bg="transparent")
+    par(mfrow=c(2,1))
     
+#     source("3_define_coeficiente_B.R")
+    source("previsao_exponencial4.R")
+    
+#     eixo_x_y = rbind(eixo_x_y, cbind(eixo_x_frequencias,alvo,previsao,coeficiente_B,a,sse,volatilidade,i))
+#     colnames(eixo_x_y) = c("eixo_x_frequencias","alvo","previsao","coeficiente_B","a","sse","volatilidade","i")
+#     
+    eixo_x_y = rbind(eixo_x_y, cbind(eixo_x_frequencias,alvo,previsao, sse,i))
+    colnames(eixo_x_y) = c("eixo_x_frequencias","alvo","previsao","sse","i")
     
     
     a = 1
@@ -129,7 +131,7 @@ for(periodo in faixa_temporal){
     eixo_x_y_sem_a = rbind(eixo_x_y_sem_a, cbind(eixo_x_frequencias,alvo,previsao,coeficiente_B,a,sse,volatilidade,i))
     #,periodo,setor,coeficiente_B*volatilidade))
     colnames(eixo_x_y_sem_a) = c("eixo_x_frequencias","alvo","previsao","coeficiente_B","a","sse","volatilidade","i")
-    
+    dev.off()
     #,"tempo","setor","b_x_volatilidade")
     
     #     print(faixa_temporal_por_setores)
@@ -150,19 +152,21 @@ boxplot(main="SSE",data.frame(com_a = eixo_x_y$sse,sem_a = eixo_x_y_sem_a$sse))
 # boxplot(main="SSE",eixo_x_y_sem_a$sse)
 # boxplot(main="MAPE",eixo_x_y$mape)
 # 
-# eixo_x_y = eixo_x_y[order(eixo_x_y$sse,decreasing=T),]
-# # 2,35,55,88,3
+eixo_x_y = eixo_x_y[order(eixo_x_y$sse,decreasing=T),]
+# eixo_x_y_sem_a = eixo_x_y_sem_a[order(eixo_x_y_sem_a$sse,decreasing=T),]
+# 2 35 84 88  3
 # # head(eixo_x_y,n=200)
 unique(head(eixo_x_y$i,n=250))
-# pior_1 = subset(eixo_x_y,eixo_x_y$i==2)[,1:3]
-# pior_2 = subset(eixo_x_y,eixo_x_y$i==35)[,1:3]
-# pior_3 = subset(eixo_x_y,eixo_x_y$i==28)[,1:3]
-# pior_4 = subset(eixo_x_y,eixo_x_y$i==3)[,1:3]
-# pior_5 = subset(eixo_x_y,eixo_x_y$i==15)[,1:3]
+# unique(head(eixo_x_y_sem_a$i,n=250))
+pior_1 = subset(eixo_x_y,eixo_x_y$i==2)[,1:2]
+pior_2 = subset(eixo_x_y,eixo_x_y$i==35)[,1:2]
+pior_3 = subset(eixo_x_y,eixo_x_y$i==84)[,1:2]
+pior_4 = subset(eixo_x_y,eixo_x_y$i==88)[,1:2]
+pior_5 = subset(eixo_x_y,eixo_x_y$i==3)[,1:2]
 # 
 # pior_1 = subset(eixo_x_y,eixo_x_y$i==2)
-pior_2 = subset(eixo_x_y,eixo_x_y$i==88)
-serie=pior_2$alvo
+# pior_2 = subset(eixo_x_y,eixo_x_y$i==6)
+# serie=pior_2$alvo
 # pior_3 = subset(eixo_x_y,eixo_x_y$i==28)
 # pior_4 = subset(eixo_x_y,eixo_x_y$i==3)
 # pior_5 = subset(eixo_x_y,eixo_x_y$i==15)
@@ -177,11 +181,11 @@ serie=pior_2$alvo
 # # sum(( atual-previsao)^2)
 # 
 # # # 
-# # write.csv(pior_1,file="pior_1.csv")
-# # write.csv(pior_2,file="pior_2.csv")
-# # write.csv(pior_3,file="pior_3.csv")
-# # write.csv(pior_4,file="pior_4.csv")
-# # write.csv(pior_5,file="pior_5.csv")
+write.csv(pior_1,file="pior_1.csv",row.names=F)
+write.csv(pior_2,file="pior_2.csv",row.names=F)
+write.csv(pior_3,file="pior_3.csv",row.names=F)
+write.csv(pior_4,file="pior_4.csv",row.names=F)
+write.csv(pior_5,file="pior_5.csv",row.names=F)
 # 
 # # write.csv(grupo_coeficiente_B,file="por_ano_0_35_b_volatilidade_sse_mape_setores.csv")
 # # write.csv(grupo_coeficiente_B,file="por_ano_b_volatilidade_sse_mape_setores.csv")
