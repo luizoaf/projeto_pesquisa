@@ -1,3 +1,4 @@
+require(minpack.lm)
 normalizacao_transformacao_linear = function(lim_min_norm,lim_max_norm,serie_temporal){
   dados_normalizados = (((lim_max_norm - lim_min_norm)*(serie_temporal - min(serie_temporal)))/(max(serie_temporal) - min(serie_temporal))) +lim_min_norm
   return(dados_normalizados)
@@ -265,7 +266,7 @@ correcao_coluna_setores = function(df_setores){
 
 plot_previsao_com_B_e_exponencial = function(eixo_x_frequencias,exponencial){
   #   png(paste("Coeficiente B ",coeficiente_B, " SSE ",sse," Incremento ",incremento,".png",sep=""))
-  plot(main=paste("Coeficiente B: ",coeficiente_B,"Volatilidade",volatilidade, "\nSSE:",sse," a: ",a),funcao_distribuicao_probabilidade(serie),type="l",ylab="Densidade",xlab="SÃ©rie de retornos")
+  plot(main=paste("Coeficiente B: ",coeficiente_B,"Volatilidade",volatilidade, "\nSSE:",sse," a: ",a),funcao_distribuicao_probabilidade(serie),ylab="Densidade",xlab="Série de retornos",pch=20)
   lines(exponencial~eixo_x_frequencias,col="blue")
   legend("topright", inset=.05, c("F.D.P.","Exponencial"), lwd= 3,col = c("black","blue"), horiz=TRUE)
   #   dev.off()

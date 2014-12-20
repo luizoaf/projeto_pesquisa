@@ -1,95 +1,29 @@
-f <- function(x1,x2,a,b1,b2) {a * (b1^x1) * (b2^x2) }
+# require(minpack.lm)
+# dados = read.csv(file="pior_1.csv")
+# eixo_x_frequencias = dados$eixo_x_frequencias
+# alvo = dados$alvo
+eixo_x_frequencias = funcao_distribuicao_probabilidade(serie)$valor_serie_retorno_eixo_x
+alvo = funcao_distribuicao_probabilidade(serie)$frequencia_eixo_y
 
-# generate some data
-x1 <- 1:10
-x2 <- c(2,3,5,4,6,7,8,10,9,11)
-set.seed(44)
-y <- 2*exp(x1/4) + rnorm(10)*2
-dat <- data.frame(x1,x2, y)
+freq_alvo = data.frame( x = eixo_x_frequencias,y = alvo)
+# freq_alvo_norm = normalizeData(freq_alvo[,2],type="0_1")
+# freq_alvo = data.frame(x = freq_alvo[,1],y = freq_alvo_norm[,1])
 
-# fit a nonlinear model
-dat = as.data.frame(alvo)
-fm <- nls(dat$alvo ~ f(x1,x2,a,b1,b2), data = dat, start = c(a=1, b1=1,b2=1))
+funcao_exp <- function(b,x,a) {a*exp(-b*x) }
 
-# get estimates of a, b
-co <- coef(fm)
+mod <- nlsLM(y ~ funcao_exp(b,x,a), data = freq_alvo, 
+             start = list(a=0.1,b = 0.1),algorithm = "LM",
+             control = list(maxiter = 500,
+             tol = 1e-05, minFactor = 0.0009765625, printEval = F, 
+             warnOnly = FALSE, trace = T))
+previsao = predict(mod, list(x = freq_alvo$x))
+# previsao = as.vector(denormalizeData(previsao,getNormParameters(freq_alvo_norm))) 
 
+sse = sum(( previsao-alvo)^2)
+# plot(main = paste("SSE: ",sse),eixo_x_frequencias, alvo)
+# lines(previsao~eixo_x_frequencias , col="green")
+a = coef(mod)[1]
+coeficiente_B = coef(mod)[2]
+volatilidade = calcula_volatilidade(serie)
 
-
-
-
-
-
-
-
-
-
-
-
-
-# x1 is the variable we want to show on the x-axis
-plot(eixo_x_frequencias~alvo)
-
-# # generate data
-# beta <- 0.05
-# n <- 100
-# temp <- data.frame(y = exp(beta * seq(n)) + rnorm(n), x = seq(n))
-# 
-# # plot data
-# plot(temp$x, temp$y)
-# 
-# # fit non-linear model
-# mod <- nls(y ~ exp(a + b * x), data = temp, start = list(a = 0, b = 0))
-# 
-# # add fitted curve
-# lines(temp$x, predict(mod, list(x = temp$x)))
-# 
-# 
-
-# generate data
-# beta <- 0.05
-# n <- 100
-# temp <- data.frame(y = exp(beta * seq(n)) + rnorm(n), x = seq(n))
-temp = data.frame(y = alvo, x = 1:length(alvo))
-
-
-# fit non-linear model
-# mod <- nls(y ~ exp(a + b * x), data = temp, start = list(a = 0, b = 0))
-
-f <- function(a,b,x) {exp(a + b * x) }
-mod <- nls(y ~ f(a,b,x), data = temp, start = list( a=0,b = 0))
-# add fitted curve
-previsao = predict(mod, list(x = temp$x))
-                   
-# plot data
-plot(temp$x, temp$y)
-lines(temp$x, previsao)
-sum(( previsao-alvo)^2)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# # generate a range of values for x1 in small increments to create a smooth line
-# xRange <- seq(min(x1), max(x1), length.out = 1000)
-# 
-# # generate the predicted y values (for a test value of x2 = 1)
-# yValues <- predict(fm, newdata=list(x1=xRange, x2=1))
-# 
-# #draw the curve
-# lines(xRange, yValues, col="blue")
-# 
-# # generate the predicted y values (for a test value of x2 = 0)
-# yValues <- predict(fm, newdata=list(x1=xRange, x2=0))
-# 
-# #draw the curve
-# lines(xRange, yValues, col="red")
+plot_previsao_com_B_e_exponencial(eixo_x_frequencias,previsao)
