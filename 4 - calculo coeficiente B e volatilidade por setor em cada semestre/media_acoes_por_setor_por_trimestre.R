@@ -103,8 +103,8 @@ eixo_x_y_sem_a = data.frame()
 i=1
 colunas = c()
 faixa_temporal_por_setores = c()
-periodo = faixa_temporal[1]
-coluna = 1
+# periodo = faixa_temporal[1]
+# coluna = 1
 for(periodo in faixa_temporal){
   serie_retornos_normalizado = dado_semestre_retorna_media_serie_retornos_por_setor(periodo)
   for(coluna in 1:length(names(serie_retornos_normalizado))){
@@ -139,10 +139,10 @@ eixo_x_y$b_volatilidade = eixo_x_y$coeficiente_B*eixo_x_y$volatilidade
 boxplot(main="SSE",eixo_x_y$sse)
 # boxplot(main="MAPE",eixo_x_y$mape)
 # 
-# eixo_x_y = eixo_x_y[order(eixo_x_y$sse,decreasing=T),]
+eixo_x_y_pior_caso = eixo_x_y[order(eixo_x_y$sse,decreasing=T),]
 # eixo_x_y_sem_a = eixo_x_y_sem_a[order(eixo_x_y_sem_a$sse,decreasing=T),]
 # 2 35 84 88  3
-# # head(eixo_x_y,n=200)
+head(eixo_x_y_pior_caso,n=1)$i
 # unique(head(eixo_x_y$i,n=250))
 # unique(head(eixo_x_y_sem_a$i,n=250))
 # pior_1 = subset(eixo_x_y,eixo_x_y$i==2)[,1:2]
@@ -151,7 +151,7 @@ boxplot(main="SSE",eixo_x_y$sse)
 # pior_4 = subset(eixo_x_y,eixo_x_y$i==88)[,1:2]
 # pior_5 = subset(eixo_x_y,eixo_x_y$i==3)[,1:2]
 # 
-# pior_1 = subset(eixo_x_y,eixo_x_y$i==2)
+pior_1 = subset(eixo_x_y,eixo_x_y$i==2)
 # pior_2 = subset(eixo_x_y,eixo_x_y$i==6)
 # serie=pior_2$alvo
 # pior_3 = subset(eixo_x_y,eixo_x_y$i==28)
@@ -159,11 +159,11 @@ boxplot(main="SSE",eixo_x_y$sse)
 # pior_5 = subset(eixo_x_y,eixo_x_y$i==15)
 # 
 # # pior_1$coeficiente_B
-# atual = pior_4[,2]
-# previsao = pior_4[,3]
-# plot(pior_4[,1:2],type="l",ylim=c(0,2))
-# lines(pior_4[,c(1,3)],col="blue")
-# pior_4$sse
+atual = pior_1[,"alvo"]
+previsao = pior_1[,"previsao"]
+plot(main = paste("Pior caso\nSSE: ",unique(pior_1$sse)),pior_1[,1:2],pch=20)
+lines(pior_1[,c(1,3)],col="blue")
+
 # 
 # # sum(( atual-previsao)^2)
 # 
@@ -191,9 +191,11 @@ boxplot(main="SSE",eixo_x_y$sse)
 # tem que ser o mesmo número
 # length(unique(eixo_x_y$b_volatilidade))
 # eixo_x_y$i
-plot(unique(eixo_x_y$b_volatilidade),ylim=c(0,2),ylab="Volatility x Coefficient B",xlab="Indices",pch=20)
-intercept = regressao.simples(1:(length(eixo_x_y$b_volatilidade)),(eixo_x_y$b_volatilidade))[1]
-slope = regressao.simples(1:(length(eixo_x_y$b_volatilidade)),(eixo_x_y$b_volatilidade))[2]
+volatilidade = sqrt(unique(eixo_x_y$volatilidade))
+B = sqrt(unique(eixo_x_y$coeficiente_B))
+plot(volatilidade*B,ylim=c(0,2),ylab="sqrt(Volatility) x sqrt(Coefficient B)",xlab="Indices",pch=20)
+intercept = regressao.simples(1:(length(volatilidade)),(B*volatilidade))[1]
+slope = regressao.simples(1:(length(volatilidade)),(B*volatilidade))[2]
 abline(a=intercept,b =slope,col=2)
 # 
 # 
@@ -202,18 +204,20 @@ abline(a=intercept,b =slope,col=2)
 plot(unique(eixo_x_y$coeficiente_B[order(eixo_x_y$coeficiente_B,decreasing=T)]),xlab="Volatility",ylab="Coefficient B",ylim=c(0, 5),col="red",pch=20)
 points(unique(eixo_x_y$volatilidade[order(eixo_x_y$volatilidade,decreasing=F)]),xlab="Indice",ylab="Volatility",col="blue",pch=20)
 # 
-# com_b_menor_que_2 = eixo_x_y[eixo_x_y$coeficiente_B<2,]
+com_b_menor_que_2 = unique(eixo_x_y[eixo_x_y$coeficiente_B>3,"i"])
 # plot(com_b_menor_que_2$coeficiente_B~com_b_menor_que_2$volatilidade,xlab="Volatility",ylab="Coefficient B")
 # 
 plot(eixo_x_y$coeficiente_B~eixo_x_y$volatilidade,xlab="Volatility",ylab="Coefficient B")
 # 
 # 
-retorna_cluster = function(semestre){
+retorna_cluster = function(){
 #   dados = subset(eixo_x_y,eixo_x_y$tempo==semestre)
   dados = eixo_x_y
   k=3
   iter = 45
   dados = dados[,c("coeficiente_B","volatilidade")]
+#   dados[,1] = log(dados[,1])
+#   dados[,2] = log(dados[,2])
   
   km = kmeans (x = dados, centers = k, iter.max = iter)
   dados$cluster = km$cluster
@@ -226,6 +230,7 @@ retorna_cluster = function(semestre){
   # dados
   return(dados$cluster)
 }
+retorna_cluster()
 semestre = "2014"
 retorna_cluster ("2014")
 cluster_2014_1 = cbind(data.frame(cluster = retorna_cluster(semestre)),eixo_x_y[eixo_x_y$tempo==semestre,c("colunas","coeficiente_B","volatilidade","tempo" )])
