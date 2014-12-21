@@ -30,5 +30,18 @@ for(tempo in unique(dados_bovespa_setores$datas)){
     risco_beta = rbind(risco_beta,calcula_risco_beta(indice_setor,tempo,dados_bovespa_setores))
   }
 }
+# plot(risco_beta$beta[order(risco_beta$beta)],)]
+plot(risco_beta$beta[order(risco_beta$beta)],)
+# points(dados$cluster[order(risco_beta$beta)]/2)
+minimo = .1
+maximo = .2
+risco_beta$risco_beta_classificacao = ""
+risco_beta$risco_beta_classificacao[risco_beta$beta < minimo] = "conservador"
+risco_beta$risco_beta_classificacao[risco_beta$beta>= minimo & risco_beta$beta < maximo] = "moderado"
+risco_beta$risco_beta_classificacao[risco_beta$beta>=maximo] = "arrojado"
 
-risco_beta
+risco_B_beta = merge(risco_beta, dados, by = intersect(names(risco_beta), names(dados)))
+
+acertou = nrow(risco_B_beta[risco_B_beta$risco_beta_classificacao == risco_B_beta$risco_b,])
+total = nrow(risco_B_beta)
+100*(acertou/total)
