@@ -148,8 +148,8 @@ acoes = paste(as.character(read.csv("acoes.csv",sep=";")[,1])[1:69],".SA",sep=""
 data_inicio = "2005-01-01"
 data_fim = "2014-06-30"
 
-dados = data.frame(data.loading(acoes[1],data_inicio,data_fim))
-for(acao in 2:length(acoes)){
+dados = data.frame(data.loading("^BVSP",data_inicio,data_fim))
+for(acao in 1:length(acoes)){
   if(!is.null(unlist(lapply(acao, tratamento_nao_tiver_dados)))){
     qnt_linhas_sem_NA = nrow(na.omit(data.loading(acoes[acao],data_inicio,data_fim)))
     #estou escolhendo apenas os papéis que tenham pelo menos mais de 1400 dias com dados não nulos entre a faixa temporal que defini anteriormente
@@ -219,4 +219,4 @@ qnt_dias_ano = aggregate(dados_teste$datas,list(format( dados_teste$datas,"%Y"))
 colnames(qnt_dias_ano) = c("Ano","qnt_dias")
 qnt_dias_ano
 #Salvo em um .csv
-# write.table(file="papeis_da_ibovespa_2008_a_2014_2.csv",dados_teste,sep=",",row.names=F,quote=T)
+# write.table(file="papeis_da_ibovespa_2008_a_2014_2_com_IBOVESPA.csv",dados_teste,sep=",",row.names=F,quote=T)

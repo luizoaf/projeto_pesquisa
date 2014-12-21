@@ -1,7 +1,9 @@
 source("../1_funcoes.R")
 # papeis_da_ibovespa_2007_2012
 # dados = read.csv(file="papeis_da_ibovespa_2007_2012.csv")
-dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_2.csv")
+# dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_2.csv")
+dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_2_com_IBOVESPA.csv")
+dados = dados[,-2]
 dados$datas  = as.Date(dados$datas)
 
 # meses = as.numeric(format( dados$datas,"%m"))
@@ -96,10 +98,7 @@ dado_semestre_retorna_media_serie_retornos_por_setor = function(semestre){
 faixa_temporal = unique(dados$datas)
 
 eixo_x_y = data.frame()
-eixo_x_y = data.frame()
 eixo_x_y_sem_a = data.frame()
-# incremento_fdp = seq(from=0.01,to=0.1,by=0.01) 
-# incremento_fdp = 0.05
 i=1
 colunas = c()
 faixa_temporal_por_setores = c()
@@ -112,7 +111,7 @@ for(periodo in faixa_temporal){
     faixa_temporal_por_setores[i] = periodo
     serie = serie_retornos_normalizado[,coluna]
     
-#     png(filename=paste(i,".png",sep=""),bg="transparent")
+    #         png(filename=paste(i,".png",sep=""),bg="transparent")
     #     par(mfrow=c(2,1))
     
     source("previsao_exponencial.R")
@@ -124,7 +123,7 @@ for(periodo in faixa_temporal){
     #     eixo_x_y_sem_a = rbind(eixo_x_y_sem_a, cbind(eixo_x_frequencias,alvo,previsao, sse,a,coeficiente_B,volatilidade,i))
     #     #,periodo,setor,coeficiente_B*volatilidade))
     #     colnames(eixo_x_y_sem_a) =  c("eixo_x_frequencias","alvo","previsao","sse","a","coeficiente_B","volatilidade","i")
-#     dev.off()
+    #         dev.off()
     i= i+1
     # write.table(eixo_x_y,paste(names(serie_retornos_normalizado)[i],grupo_janelamento,"combinacao_janelamento_30_incrementos_0_01_0_28_todas_acoes.csv"),row.names=F,sep=",")
   }
@@ -191,8 +190,8 @@ lines(pior_1[,c(1,3)],col="blue")
 # tem que ser o mesmo número
 # length(unique(eixo_x_y$b_volatilidade))
 # eixo_x_y$i
-volatilidade = sqrt(unique(eixo_x_y$volatilidade))
-B = sqrt(unique(eixo_x_y$coeficiente_B))
+volatilidade = (unique(eixo_x_y$volatilidade))
+B = (unique(eixo_x_y$coeficiente_B))
 plot(volatilidade*B,ylim=c(0,2),ylab="sqrt(Volatility) x sqrt(Coefficient B)",xlab="Indices",pch=20)
 intercept = regressao.simples(1:(length(volatilidade)),(B*volatilidade))[1]
 slope = regressao.simples(1:(length(volatilidade)),(B*volatilidade))[2]
@@ -211,13 +210,13 @@ plot(eixo_x_y$coeficiente_B~eixo_x_y$volatilidade,xlab="Volatility",ylab="Coeffi
 # 
 # 
 retorna_cluster = function(){
-#   dados = subset(eixo_x_y,eixo_x_y$tempo==semestre)
+  #   dados = subset(eixo_x_y,eixo_x_y$tempo==semestre)
   dados = eixo_x_y
   k=3
   iter = 45
   dados = dados[,c("coeficiente_B","volatilidade")]
-#   dados[,1] = log(dados[,1])
-#   dados[,2] = log(dados[,2])
+  #   dados[,1] = log(dados[,1])
+  #   dados[,2] = log(dados[,2])
   
   km = kmeans (x = dados, centers = k, iter.max = iter)
   dados$cluster = km$cluster

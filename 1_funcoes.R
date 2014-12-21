@@ -166,7 +166,7 @@ funcao_distribuicao_probabilidade = function(serie_retorno){
   #   seq(from=0.01,to=max(serie),by=0.09)
   #   vetor_incremento = seq(from=valor_incremento,to=max(serie),by=valor_incremento_fdp)
 #   incremento = 0.05
-  incremento = 0.05
+  incremento = 0.3
   vetor_incremento = seq(from=0.01,to=max(serie_retorno),by=incremento)
   cont= 0
   indice = 1
