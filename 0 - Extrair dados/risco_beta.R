@@ -42,7 +42,7 @@ for(tempo in unique(dados_bovespa_setores$datas)){
 # 0.9   1.33 
 # minimo = .9
 # maximo = 1.33
-minimo = .9
+minimo = .95
 maximo = 1.15
 # min_ = seq(0.9,1.7,by=0.01)
 # max_ = seq(0.9,max(risco_beta$beta),by=0.01)
