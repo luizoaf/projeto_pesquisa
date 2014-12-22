@@ -150,8 +150,8 @@ retorna_cluster = function(dados,k){
   #   dados = subset(eixo_x_y,eixo_x_y$tempo==semestre)
   iter = 45
   agrupamento = dados[,c("coeficiente_B","volatilidade")]
-  #   dados[,1] = log(dados[,1])
-  #   dados[,2] = log(dados[,2])
+#     dados[,1] = log(dados[,1])
+#     dados[,2] = log(dados[,2])
   
   km = kmeans (x = agrupamento, centers = k, iter.max = iter)
   agrupamento$cluster = km$cluster
@@ -192,8 +192,19 @@ retorna_cluster = function(dados,k){
   # dados
   return(dados)
 }
-dados = retorna_cluster(eixo_x_y,3)
+eixo_x_y_sem_outlier = eixo_x_y[eixo_x_y$coeficiente_B<3,]
+dados = retorna_cluster(eixo_x_y_sem_outlier,3)
+outlier = eixo_x_y[eixo_x_y$coeficiente_B>3,]
+outlier$cor = "red"
+outlier$cluster = unique(dados$cluster[dados$risco_b=="arrojado"])
+outlier$risco_b = "arrojado"
+dados = rbind( dados,outlier)
 head(dados)
+legenda = c("conservador","moderado","arrojado")
+plot(main= paste("Para K = ",3,sep =""),dados$coeficiente_B~dados$volatilidade,xlab="Volatility",ylab="Coefficient B", col = dados$cor,pch = 20, cex = 0.9)
+#   points(km$centers[,1]~km$centers[,2],col=4, pch = 8,lwd=2)
+legend("topright", inset=.05,legenda , lwd= 3,col =c("green","black","red") , horiz=TRUE)
+
 # semestre = "2014"
 # retorna_cluster ("2014")
 # cluster_2014_1 = cbind(data.frame(cluster = retorna_cluster(semestre)),eixo_x_y[eixo_x_y$tempo==semestre,c("colunas","coeficiente_B","volatilidade","tempo" )])
