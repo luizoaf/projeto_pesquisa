@@ -160,16 +160,16 @@ retorna_cluster = function(dados,k){
   dados$cluster = agrupamento$cluster
   dados$risco_b = ""
   dados$risco_b[dados$cluster == grupos[1]] = "moderado"
-  dados$risco_b[dados$cluster == grupos[2]] = "conservador"
-  dados$risco_b[dados$cluster == grupos[3]] = "arrojado"
+  dados$risco_b[dados$cluster == grupos[2]] = "arrojado"
+  dados$risco_b[dados$cluster == grupos[3]] = "conservador"
   
   dados$cor = ""
   #   dados$cor[dados$cluster == grupos[1]] = "black"
   #   dados$cor[dados$cluster == grupos[2]] = "green"
   #   dados$cor[dados$cluster == grupos[3]] = "red"
   dados$cor[dados$cluster == grupos[1]] = "black"
-  dados$cor[dados$cluster == grupos[2]] = "green"
-  dados$cor[dados$cluster == grupos[3]] = "red"
+  dados$cor[dados$cluster == grupos[2]] = "red"
+  dados$cor[dados$cluster == grupos[3]] = "green"
   
   
   cor = c()
@@ -177,8 +177,8 @@ retorna_cluster = function(dados,k){
   #   dados$cor[dados$cluster == grupos[2]] = "green"
   #   dados$cor[dados$cluster == grupos[3]] = "red"
   cor[dados$cluster == grupos[1]] = "black"
-  cor[dados$cluster == grupos[2]] = "green"
-  cor[dados$cluster == grupos[3]] = "red"
+  cor[dados$cluster == grupos[2]] = "red"
+  cor[dados$cluster == grupos[3]] = "green"
   head(dados)
   #   cluster_ordem = unique( km$cluster)
   legenda = c("conservador","moderado","arrojado")
@@ -195,9 +195,9 @@ retorna_cluster = function(dados,k){
 eixo_x_y_sem_outlier = eixo_x_y[eixo_x_y$coeficiente_B<3,]
 dados = retorna_cluster(eixo_x_y_sem_outlier,3)
 outlier = eixo_x_y[eixo_x_y$coeficiente_B>3,]
-outlier$cor = "red"
-outlier$cluster = unique(dados$cluster[dados$risco_b=="arrojado"])
-outlier$risco_b = "arrojado"
+outlier$cor = "green"
+outlier$cluster = unique(dados$cluster[dados$risco_b=="conservador"])
+outlier$risco_b = "conservador"
 dados = rbind( dados,outlier)
 head(dados)
 legenda = c("conservador","moderado","arrojado")
