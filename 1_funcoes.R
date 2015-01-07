@@ -194,7 +194,7 @@ funcao_distribuicao_probabilidade = function(serie_retorno){
   serie_retorno_densidade = data.frame(valor_serie_retorno_eixo_x = vetor_x_valor_serie_retorno,frequencia_eixo_y = vetoryNorm)
   serie_retorno_densidade = na.omit(serie_retorno_densidade)
   #remocao da cauda, como valores acima de 2.5 sera considerado cauda
-  serie_retorno_densidade = serie_retorno_densidade[serie_retorno_densidade$valor_serie_retorno_eixo_x<2.5,]
+  serie_retorno_densidade = serie_retorno_densidade[serie_retorno_densidade$valor_serie_retorno_eixo_x<3,]
   return(serie_retorno_densidade)
 }
 

@@ -2,7 +2,11 @@ source("../1_funcoes.R")
 # papeis_da_ibovespa_2007_2012
 # dados = read.csv(file="papeis_da_ibovespa_2007_2012.csv")
 # dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_2.csv")
-dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_2_com_IBOVESPA.csv")
+# dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_2_com_IBOVESPA.csv")
+# dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_com_IBOVESPA.csv")
+dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_com_95_IBOVESPA.csv")
+
+
 dados = dados[,-2]
 dados$datas  = as.Date(dados$datas)
 
@@ -85,7 +89,7 @@ head(eixo_x_y_pior_caso,n=1)$i
 # pior_4 = subset(eixo_x_y,eixo_x_y$i==88)[,1:2]
 # pior_5 = subset(eixo_x_y,eixo_x_y$i==3)[,1:2]
 # 
-pior_1 = subset(eixo_x_y,eixo_x_y$i==2)
+pior_1 = subset(eixo_x_y,eixo_x_y$i==3)
 # pior_2 = subset(eixo_x_y,eixo_x_y$i==6)
 # serie=pior_2$alvo
 # pior_3 = subset(eixo_x_y,eixo_x_y$i==28)

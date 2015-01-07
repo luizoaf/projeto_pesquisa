@@ -145,15 +145,16 @@ acoes = paste(as.character(read.csv("acoes.csv",sep=";")[,1])[1:69],".SA",sep=""
 # formato AAAA-MM-DD
 # data_inicio = "2005-11-18"
 # data_fim = "2012-12-16"
-data_inicio = "2005-01-01"
-data_fim = "2014-06-30"
+data_inicio = "2008-01-01"
+# data_fim = "2014-06-30"
+data_fim = "2014-12-31"
 
 dados = data.frame(data.loading("^BVSP",data_inicio,data_fim))
 for(acao in 1:length(acoes)){
   if(!is.null(unlist(lapply(acao, tratamento_nao_tiver_dados)))){
     qnt_linhas_sem_NA = nrow(na.omit(data.loading(acoes[acao],data_inicio,data_fim)))
     #estou escolhendo apenas os papéis que tenham pelo menos mais de 1400 dias com dados não nulos entre a faixa temporal que defini anteriormente
-    if(qnt_linhas_sem_NA> 1800){
+    if(qnt_linhas_sem_NA> 1827*.95){
       dados = merge(dados,data.loading(acoes[acao],data_inicio,data_fim),by="datas")
     }
     
@@ -165,6 +166,7 @@ for(i in 1:ncol(dados)){
   qnt_linhas_sem_NA = length(na.omit(dados[,i]))
   qnt_na[i] = qnt_linhas_sem_NA
 }
+# mean(qnt_na)
 # boxplot(qnt_na)
 
 # apenas os dias em comum que nao possuem valores nulos
@@ -218,5 +220,10 @@ dados_teste = na.omit(dados_teste)
 qnt_dias_ano = aggregate(dados_teste$datas,list(format( dados_teste$datas,"%Y")),FUN=length)
 colnames(qnt_dias_ano) = c("Ano","qnt_dias")
 qnt_dias_ano
+sum(qnt_dias_ano$qnt_dias)
+sum(qnt_dias_ano$qnt_dias)/1827
 #Salvo em um .csv
 # write.table(file="papeis_da_ibovespa_2008_a_2014_2_com_IBOVESPA.csv",dados_teste,sep=",",row.names=F,quote=T)
+# write.table(file="papeis_da_ibovespa_2008_a_2014_com_IBOVESPA.csv",dados_teste,sep=",",row.names=F,quote=T)
+# write.table(file="papeis_da_ibovespa_2008_a_2014_com_97_5_IBOVESPA.csv",dados_teste,sep=",",row.names=F,quote=T)
+write.table(file="papeis_da_ibovespa_2008_a_2014_com_95_IBOVESPA.csv",dados_teste,sep=",",row.names=F,quote=T)
