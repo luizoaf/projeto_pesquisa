@@ -54,20 +54,20 @@ points((((risco_B_beta$coeficiente_B*risco_B_beta$volatilidade)) )[order(risco_B
 # riscos[risco_B_beta$cluster==2] = 1.5
 # points(dados$cluster[order(risco_beta$beta)]/2)
 # 0.9   1.33 
-minimo = .9
-maximo = 1.1
+# minimo = .9
+# maximo = 1.1
 # minimo = .95
 # maximo = 1.15
-# min_ = seq(0.9,1.7,by=0.01)
-# max_ = seq(0.9,max(risco_beta$beta),by=0.01)
-# acc = data.frame()
-# for(minimo in min_ ){
-#   for(maximo in min_ ){
-    risco_B_beta$risco_beta_classificacao = ""
-    risco_B_beta$risco_beta_classificacao[risco_B_beta$beta < minimo] = "conservador"
-    risco_B_beta$risco_beta_classificacao[risco_B_beta$beta>= minimo & risco_B_beta$beta < maximo] = "moderado"
-    # risco_B_beta$risco_beta_classificacao[risco_B_beta$beta == 1] = "moderado"
-    risco_B_beta$risco_beta_classificacao[risco_B_beta$beta>= maximo] = "arrojado"
+min_ = seq(0.9,1.7,by=0.01)
+max_ = seq(0.9,max(risco_beta$beta),by=0.01)
+acc = data.frame()
+for(minimo in min_ ){
+  for(maximo in min_ ){
+    risco_beta$risco_beta_classificacao = ""
+    risco_beta$risco_beta_classificacao[risco_beta$beta < minimo] = "conservador"
+    risco_beta$risco_beta_classificacao[risco_beta$beta>= minimo & risco_beta$beta < maximo] = "moderado"
+    # risco_beta$risco_beta_classificacao[risco_beta$beta == 1] = "moderado"
+    risco_beta$risco_beta_classificacao[risco_beta$beta>= maximo] = "arrojado"
     
     
     # minimo = 1
@@ -91,14 +91,14 @@ maximo = 1.1
     
     plot(main= paste("Para K = ",3,sep =""),risco_B_beta$coeficiente_B~risco_B_beta$volatilidade,xlab="Volatility",ylab="Coefficient B", col = risco_B_beta$cor_beta,pch = 20, cex = 0.9)
     legend("topright", inset=.05,legenda , lwd= 3,col =c("green","black","red") , horiz=TRUE)
-    acertou = nrow(risco_B_beta[risco_beta$risco_beta_classificacao == risco_B_beta$risco_b,])
+    acertou = nrow(risco_B_beta[risco_B_beta$risco_beta_classificacao == risco_B_beta$risco_b,])
     total = nrow(risco_B_beta)
     acuracia = 100*(acertou/total)
-    acuracia
-#     acc = rbind(acc,c(minimo,maximo,acuracia)) 
-#   } 
-# }
-# head(acc[order(acc[,3],decreasing=T),])
+#     acuracia
+    acc = rbind(acc,c(minimo,maximo,acuracia)) 
+  } 
+}
+head(acc[order(acc[,3],decreasing=T),])
 
 # 
 # risco_B_beta = merge(risco_beta, dados, by = intersect(names(risco_beta), names(dados)))
