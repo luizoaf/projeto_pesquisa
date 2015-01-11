@@ -1,8 +1,8 @@
 dados = read.table("calculo_b_volatilidade.csv",sep=",",head=T)
-
-retorna_cluster = function(dados,k){
+k = 3
+retorna_cluster = function(periodo,dados,k){
   #   dados = eixo_x_y
-  #     k = 3
+  #       k = 2
   #   dados = subset(eixo_x_y,eixo_x_y$tempo==semestre)
   iter = 45
   #   agrupamento = data.frame(coeficiente_B = dados[,c("coeficiente_B")])
@@ -22,21 +22,22 @@ retorna_cluster = function(dados,k){
   dados$cor[dados$cluster == grupos[2]] = "red"
   dados$cor[dados$cluster == grupos[3]] = "green"
   
-  legenda = c("conservador","moderado","arrojado")
+  #   legenda = c("conservador","moderado","arrojado")
   #   plot(main= paste("Para K = ",k,sep =""),agrupamento$coeficiente_B,xlab="indexes",ylab="Coefficient B", col = dados$cor,pch = 20, cex = 0.9)
-  plot(main= paste("Para K = ",k,sep =""),agrupamento$volatilidade,xlab="indexes",ylab="Volatility B", col = dados$cor,pch = 20, cex = 0.9)
+  #   plot(main= paste("Para K = ",k,sep =""),agrupamento$volatilidade,xlab="indexes",ylab="Volatility B", col = dados$cor,pch = 20, cex = 0.9)
   #   points(km$centers[,1]~km$centers[,2],col=4, pch = 8,lwd=2)
-  legend("topright", inset=.05,legenda , lwd= 3,col =c("green","black","red") , horiz=TRUE)
+  #   legend("topright", inset=.05,legenda , lwd= 3,col =c("green","black","red") , horiz=TRUE)
   centroides = as.data.frame(km$centers)
   #   centroides = centroides[order(centroides$coeficiente_B,decreasing=T),]
-  centroides = centroides[order(centroides$volatilidade,decreasing=T),]
-  centroides = cbind(centroides,data.frame(risco = c("arrojado","moderado","conservador")))
+  centroides = centroides[order(centroides$volatilidade,decreasing=F),]
+  centroides = cbind(centroides,data.frame(risco = c("conservador","moderado","arrojado")))
+  #   centroides = cbind(centroides,data.frame(risco = c("arrojado","conservador")))
   centroides$cor = ""
   centroides$cor[centroides$risco == "conservador"] = "green"
   centroides$cor[centroides$risco == "moderado"] = "black"
   centroides$cor[centroides$risco == "arrojado"] = "red"
-  
-  plot( centroides$centroides,col=centroides$cor, pch = 8,lwd=3)
+#   periodo = 2008
+    plot(main=periodo,xlab = "indice ignorado" ,ylab = "volatilidade",centroides$centroides~rep(1,length(centroides$centroides)),col=centroides$cor, pch = 8,lwd=3)
   #     plot( centroides$volatilidade,col=centroides$cor, pch = 8,lwd=3,xlim=c(0,2.5),ylim=c(0,4.5))
   return(centroides)
 }
@@ -44,13 +45,14 @@ retorna_cluster = function(dados,k){
 faixa_temporal = unique(dados$tempo)
 novos_pontos_classificados_com_setores = data.frame()
 for( periodo in faixa_temporal){
-  #   periodo = 2008
+#       periodo = 2008
   faixa_temporal_teste = periodo
   faixa_temporal_treino = setdiff(faixa_temporal, periodo)
   
   teste = subset(dados,dados$tempo == faixa_temporal_teste)
   treino = subset(dados,dados$tempo %in% faixa_temporal_treino)
-  centroides = retorna_cluster(treino,3)
+  png(paste(periodo,".png",sep=""))
+  centroides = retorna_cluster(periodo,treino,k)
   
   # 
   #   pontos_novos = data.frame(coeficiente_B = teste[,c("coeficiente_B")])
@@ -63,7 +65,7 @@ for( periodo in faixa_temporal){
   
   for(ponto_estudado in 1:nrow(pontos_novos)){
     
-    ponto_centroide = 1:3 # os 3 possiveis centroides dos riscos
+    ponto_centroide = 1:k # os 3 possiveis centroides dos riscos
     #     distancia = sqrt((pontos_novos$volatilidade[ponto_estudado] - centroides$volatilidade[ponto_centroide])^2 + (pontos_novos$coeficiente_B[ponto_estudado] - centroides$coeficiente_B[ponto_centroide])^2)
     #     distancia = sqrt((pontos_novos$coeficiente_B[ponto_estudado] - centroides$centroides[ponto_centroide])^2)
     distancia = sqrt((pontos_novos$volatilidade[ponto_estudado] - centroides$centroides[ponto_centroide])^2)
@@ -92,7 +94,15 @@ for( periodo in faixa_temporal){
     agrupamento = cbind(agrupamento,periodo)
     novos_pontos_classificados = rbind(novos_pontos_classificados,agrupamento)
   }
-  novos_pontos_classificados_com_setores = rbind(novos_pontos_classificados_com_setores,merge(novos_pontos_classificados,teste, by = intersect(names(novos_pontos_classificados), names(teste))))
+  agrupamento_periodo = merge(novos_pontos_classificados,teste, by = intersect(names(novos_pontos_classificados), names(teste)))
+  novos_pontos_classificados_com_setores = rbind(novos_pontos_classificados_com_setores,agrupamento_periodo)
+  
+  agrupamento_periodo$cor = ""
+  agrupamento_periodo$cor[agrupamento_periodo$risco == "moderado"] = "black"
+  agrupamento_periodo$cor[agrupamento_periodo$risco == "arrojado"] = "red"
+  agrupamento_periodo$cor[agrupamento_periodo$risco == "conservador"] = "green"
+  points(agrupamento_periodo$volatilidade~rep(1,length(agrupamento_periodo$volatilidade)),col=agrupamento_periodo$cor)
+  dev.off()
   #   print(teste)
   #   print(treino)
   #   break
@@ -113,3 +123,4 @@ novos_pontos_classificados_com_setores$cor[novos_pontos_classificados$risco == "
 novos_pontos_classificados_com_setores$cor[novos_pontos_classificados$risco == "conservador"] = "green"
 
 write.table(novos_pontos_classificados_com_setores,file="agrupamento_sse_volatilidade.csv",row.names=F)
+# write.table(novos_pontos_classificados_com_setores,file="agrupamento_sse_volatilidade_k_2.csv",row.names=F)
