@@ -1,6 +1,8 @@
+# dados = read.table("calculo_b_volatilidade.csv",sep=",",head=T)
+dados = read.table("calculo_b_volatilidade_sem_4_outliers.csv",sep=",",head=T)
 
-
-dados = read.table("calculo_b_volatilidade.csv",sep=",",head=T)
+dados = dados[order(dados$coeficiente_B,decreasing=T),]
+dados = dados[3:nrow(dados),] # elimina 2 outliers 
 # names(dados)
 # require(RSNNS)
 # norm = normalizeData(dados[,c("coeficiente_B","volatilidade")],type="0_1")
@@ -129,6 +131,6 @@ novos_pontos_classificados_com_setores$cor = ""
 novos_pontos_classificados_com_setores$cor[novos_pontos_classificados$risco == "moderado"] = "black"
 novos_pontos_classificados_com_setores$cor[novos_pontos_classificados$risco == "arrojado"] = "red"
 novos_pontos_classificados_com_setores$cor[novos_pontos_classificados$risco == "conservador"] = "green"
-points(novos_pontos_classificados_com_setores$coeficiente_B~novos_pontos_classificados_com_setores$volatilidade,col=novos_pontos_classificados_com_setores$cor)
-# write.table(novos_pontos_classificados_com_setores,file="agrupamento_sse_b_e_volatilidade.csv",row.names=F)
+# points(novos_pontos_classificados_com_setores$coeficiente_B~novos_pontos_classificados_com_setores$volatilidade,col=novos_pontos_classificados_com_setores$cor)
+write.table(novos_pontos_classificados_com_setores,file="agrupamento_sse_b_e_volatilidade.csv",row.names=F)
 # write.table(novos_pontos_classificados_com_setores,file="agrupamento_sse_b_e_volatilidade_k_2.csv",row.names=F)

@@ -47,5 +47,6 @@ b_volatilidade_sse_volatilidade = cbind(b_volatilidade_sse_volatilidade,data.fra
 # boxplot(b_volatilidade_sse_volatilidade[,2:3])
 
 # write.table(file="sse_agrupamentos_diferentes.csv",b_volatilidade_sse_volatilidade,row.names=F)
+write.table(file="sse_agrupamentos_diferentes_sem_4_outliers.csv",b_volatilidade_sse_volatilidade,row.names=F)
 
 aggre
