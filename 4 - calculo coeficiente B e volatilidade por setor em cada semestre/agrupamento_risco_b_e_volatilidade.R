@@ -50,6 +50,8 @@ retorna_cluster = function(periodo,dados,k){
 
 faixa_temporal = unique(dados$tempo)
 novos_pontos_classificados_com_setores = data.frame()
+todos_centroides = data.frame()
+periodos = rep(2008:2014,each = 3)
 for( periodo in faixa_temporal){
   #   periodo = 2008
   faixa_temporal_teste = periodo
@@ -59,7 +61,7 @@ for( periodo in faixa_temporal){
   treino = subset(dados,dados$tempo %in% faixa_temporal_treino)
   png(paste(periodo,".png",sep=""))
   centroides = retorna_cluster(periodo,treino,k)
-  
+  todos_centroides = rbind(todos_centroides,centroides)
   # 
   # treino = subset(dados,dados$tempo< 2014)
   # teste = subset(dados,dados$tempo == 2014)
@@ -112,6 +114,8 @@ for( periodo in faixa_temporal){
   #   break
   
 }
+todos_centroides = cbind(todos_centroides,periodos)
+
 # # novos_pontos_classificados = data.frame(pontos_novos$volatilidade)
 # 
 # novos_pontos_classificados$cor = ""
@@ -135,3 +139,4 @@ novos_pontos_classificados_com_setores$cor[novos_pontos_classificados$risco == "
 # points(novos_pontos_classificados_com_setores$coeficiente_B~novos_pontos_classificados_com_setores$volatilidade,col=novos_pontos_classificados_com_setores$cor)
 # write.table(novos_pontos_classificados_com_setores,file="agrupamento_sse_b_e_volatilidade_k_2.csv",row.names=F)
 write.table(novos_pontos_classificados_com_setores,file="agrupamento_sse_b_e_volatilidade.csv",row.names=F)
+write.table(todos_centroides,file="centroides.csv",row.names=F)

@@ -49,6 +49,19 @@ colunas = c()
 faixa_temporal_por_setores = c()
 # periodo = faixa_temporal[1]
 # coluna = 1
+
+
+# só comentar para ficar sem serie de retorno setores_media_acoes = cria_tabela_serie_retornos_de_todas_as_acoes(setores_media_acoes)
+setEPS()
+postscript("imagens/com_serie_retorno_serie_temporal_2014_Cons_N_Básico_Alimentos_Processados.eps")
+periodo = 2014
+serie_retornos_normalizado = dado_semestre_retorna_media_serie_retornos_por_setor(periodo,dados)
+plot(main="Sector Consumption Not Cyclical / Processed Food in 2014",
+     serie_retornos_normalizado$"Cons N Básico / Alimentos Processados", ylab="Price (R$)",xlab="Days",
+     type="l",las=1)
+
+dev.off()
+
 for(periodo in faixa_temporal){
   serie_retornos_normalizado = dado_semestre_retorna_media_serie_retornos_por_setor(periodo,dados)
   for(coluna in 1:length(names(serie_retornos_normalizado))){
@@ -149,7 +162,7 @@ atual = pior_1[,"alvo"]
 previsao = pior_1[,"previsao"]
 # main = paste("Outlier\nSSE: ",unique(pior_1$sse),"\nB: ",unique(pior_1$coeficiente_B)," volat.: ",unique(pior_1$volatilidade))
 # Consumo não Cíclico/Produtos de uso Pessoal e Limpeza
-plot( pior_1[,"eixo_x_frequencias"],log(pior_1[,"alvo"]),xlab="Returns",ylab="Consumption Not Cyclical /  Products of use Personal and Cleaning" ,pch=formato_ponto)
+plot( pior_1[,"eixo_x_frequencias"],log(pior_1[,"alvo"]),xlab="Returns",ylab="Sector Consumption Not Cyclical /  Products of use Personal and Cleaning" ,pch=formato_ponto,las=1)
 lines(pior_1[,"eixo_x_frequencias"],log(pior_1[,"previsao"]),col="gray",lwd=2)
 # mtext("aaaaaaaaaaaaaaadownvar",side=1,line=2,col=1)
 dev.off()
@@ -191,7 +204,7 @@ B = (unique(eixo_x_y$coeficiente_B))
 plot(volatilidade*B,ylim=c(0,2),cex=1.3,ylab="Volatility x Coefficient B",xlab="Indexes of the sectors",pch=formato_ponto,las=1)
 intercept = regressao.simples(1:(length(volatilidade)),(B*volatilidade))[1]
 slope = regressao.simples(1:(length(volatilidade)),(B*volatilidade))[2]
-abline(a=1,b =0,col=1,lwd=2) #"gray"
+abline(a=1,b =0,lwd=2,col="gray") #"gray"
 dev.off()
 ########################################################################
 
@@ -206,7 +219,7 @@ postscript("imagens/inversamente_proporcionais_b_volatilidade.eps")
 legenda = c("Coefficient B","Volatility")
 plot(unique(eixo_x_y$coeficiente_B[order(eixo_x_y$coeficiente_B,decreasing=T)]),xlab="Indexes of the sectors",ylab="Amplitudes",ylim=c(0.6, 1.6),col="black",pch=formato_ponto,las=1)
 points(unique(eixo_x_y$volatilidade[order(eixo_x_y$volatilidade,decreasing=F)]),xlab="Indice",ylab="Volatility",col="black",pch=4)
-legend("topleft", inset=.04,legenda ,col =c("black","black") ,pch=c(21,4), horiz=F)
+legend("topleft", inset=.04,legenda ,col =c("black","black") ,pch=c(formato_ponto,4), horiz=F)
 dev.off()
 
 ####################################################################################################
