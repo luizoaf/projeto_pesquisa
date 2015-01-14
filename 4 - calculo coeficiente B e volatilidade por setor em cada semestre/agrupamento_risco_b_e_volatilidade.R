@@ -1,8 +1,8 @@
 # dados = read.table("calculo_b_volatilidade.csv",sep=",",head=T)
 dados = read.table("calculo_b_volatilidade_sem_4_outliers.csv",sep=",",head=T)
-
-dados = dados[order(dados$coeficiente_B,decreasing=T),]
-dados = dados[3:nrow(dados),] # elimina 2 outliers 
+# periodo=2008
+# dados = dados[order(dados$coeficiente_B,decreasing=T),]
+# dados = dados[5:nrow(dados),] # elimina 4 outliers 
 # names(dados)
 # require(RSNNS)
 # norm = normalizeData(dados[,c("coeficiente_B","volatilidade")],type="0_1")
@@ -51,7 +51,7 @@ retorna_cluster = function(periodo,dados,k){
 faixa_temporal = unique(dados$tempo)
 novos_pontos_classificados_com_setores = data.frame()
 for( periodo in faixa_temporal){
-#   periodo = 2008
+  #   periodo = 2008
   faixa_temporal_teste = periodo
   faixa_temporal_treino = setdiff(faixa_temporal, periodo)
   
@@ -69,7 +69,7 @@ for( periodo in faixa_temporal){
   #     points(pontos_novos$coeficiente_B~pontos_novos$volatilidade,col="violet")")
   
   novos_pontos_classificados = data.frame()
-  #   ponto_estudado = 1# indices de todos os pontos
+  #     ponto_estudado = 1# indices de todos os pontos
   
   for(ponto_estudado in 1:nrow(pontos_novos)){
     
@@ -97,6 +97,7 @@ for( periodo in faixa_temporal){
     agrupamento = cbind(agrupamento,periodo)
     novos_pontos_classificados = rbind(novos_pontos_classificados,agrupamento)
   }
+  print(paste("Ano: ",periodo,"Soma da Dist. Euclidiana:",sum(agrupamento$distancia_euclidiana^2)/2))
   agrupamento_periodo = merge(novos_pontos_classificados,teste, by = intersect(names(novos_pontos_classificados), names(teste)))
   novos_pontos_classificados_com_setores = rbind(novos_pontos_classificados_com_setores,agrupamento_periodo)
   
@@ -105,7 +106,7 @@ for( periodo in faixa_temporal){
   agrupamento_periodo$cor[agrupamento_periodo$risco == "arrojado"] = "red"
   agrupamento_periodo$cor[agrupamento_periodo$risco == "conservador"] = "green"
   points(agrupamento_periodo$coeficiente_B~agrupamento_periodo$volatilidade,col=agrupamento_periodo$cor)
-  dev.off()
+#   dev.off()
   #   print(teste)
   #   print(treino)
   #   break
@@ -132,5 +133,5 @@ novos_pontos_classificados_com_setores$cor[novos_pontos_classificados$risco == "
 novos_pontos_classificados_com_setores$cor[novos_pontos_classificados$risco == "arrojado"] = "red"
 novos_pontos_classificados_com_setores$cor[novos_pontos_classificados$risco == "conservador"] = "green"
 # points(novos_pontos_classificados_com_setores$coeficiente_B~novos_pontos_classificados_com_setores$volatilidade,col=novos_pontos_classificados_com_setores$cor)
-write.table(novos_pontos_classificados_com_setores,file="agrupamento_sse_b_e_volatilidade.csv",row.names=F)
 # write.table(novos_pontos_classificados_com_setores,file="agrupamento_sse_b_e_volatilidade_k_2.csv",row.names=F)
+write.table(novos_pontos_classificados_com_setores,file="agrupamento_sse_b_e_volatilidade.csv",row.names=F)

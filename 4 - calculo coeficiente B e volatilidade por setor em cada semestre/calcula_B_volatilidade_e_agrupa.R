@@ -56,7 +56,7 @@ for(periodo in faixa_temporal){
     faixa_temporal_por_setores[i] = periodo
     serie = serie_retornos_normalizado[,coluna]
     
-    #         png(filename=paste(i,".png",sep=""),bg="transparent")
+#             png(filename=paste(i,".png",sep=""),bg="transparent")
     #     par(mfrow=c(2,1))
     
     source("previsao_exponencial.R")
@@ -64,12 +64,12 @@ for(periodo in faixa_temporal){
     #     colnames(eixo_x_y) = c("eixo_x_frequencias","alvo","previsao","sse","a","coeficiente_B","volatilidade","i")
     #     
     ###### OK #####
-    eixo_x_y = rbind(eixo_x_y, cbind(sse,a,coeficiente_B,volatilidade,i))
-    colnames(eixo_x_y) = c("sse","a","coeficiente_B","volatilidade","i")
+#     eixo_x_y = rbind(eixo_x_y, cbind(sse,a,coeficiente_B,volatilidade,i))
+#     colnames(eixo_x_y) = c("sse","a","coeficiente_B","volatilidade","i")
     ###############
     ###### ADAPTACAO ######
-#     eixo_x_y = rbind(eixo_x_y, cbind(eixo_x_frequencias,alvo,previsao,sse,a,coeficiente_B,volatilidade,i))
-#     colnames(eixo_x_y) = c("eixo_x_frequencias","alvo","previsao","sse","a","coeficiente_B","volatilidade","i")
+    eixo_x_y = rbind(eixo_x_y, cbind(eixo_x_frequencias,alvo,previsao,sse,a,coeficiente_B,volatilidade,i))
+    colnames(eixo_x_y) = c("eixo_x_frequencias","alvo","previsao","sse","a","coeficiente_B","volatilidade","i")
     ########################
     
     #     a = 1
@@ -77,7 +77,7 @@ for(periodo in faixa_temporal){
     #     eixo_x_y_sem_a = rbind(eixo_x_y_sem_a, cbind(eixo_x_frequencias,alvo,previsao, sse,a,coeficiente_B,volatilidade,i))
     #     #,periodo,setor,coeficiente_B*volatilidade))
     #     colnames(eixo_x_y_sem_a) =  c("eixo_x_frequencias","alvo","previsao","sse","a","coeficiente_B","volatilidade","i")
-    #         dev.off()
+#             dev.off()
     i= i+1
     # write.table(eixo_x_y,paste(names(serie_retornos_normalizado)[i],grupo_janelamento,"combinacao_janelamento_30_incrementos_0_01_0_28_todas_acoes.csv"),row.names=F,sep=",")
   }
@@ -87,23 +87,23 @@ eixo_x_y$setor = colunas
 eixo_x_y$b_volatilidade = eixo_x_y$coeficiente_B*eixo_x_y$volatilidade
 #remocao dos outliers
 eixo_x_y_sem_outliers = eixo_x_y[eixo_x_y$coeficiente_B < 1.5,]
-# eixo_x_y = eixo_x_y_sem_outliers
+eixo_x_y = eixo_x_y_sem_outliers
 
 # plot(eixo_x_y$b_volatilidade,ylim=c(0,2))
 # unique(eixo_x_y$i[eixo_x_y_sem_a$sse < eixo_x_y$sse])
 # boxplot(main="SSE",data.frame(com_a = eixo_x_y$sse,sem_a = eixo_x_y_sem_a$sse))
-boxplot(main="SSE com outliers",eixo_x_y$sse)
-boxplot(main="SSE sem outliers",eixo_x_y_sem_outliers$sse)
+# boxplot(main="SSE com outliers",eixo_x_y$sse)
+# boxplot(main="SSE sem outliers",eixo_x_y_sem_outliers$sse)
 
 # boxplot(main="MAPE",eixo_x_y$mape)
 # 
 # eixo_x_y_pior_caso = eixo_x_y[order(eixo_x_y$sse,decreasing=T),]
-eixo_x_y_pior_caso = eixo_x_y[order(eixo_x_y$coeficiente_B,decreasing=T),]
-head(eixo_x_y_pior_caso)
-eixo_x_y_pior_caso = eixo_x_y_pior_caso[eixo_x_y_pior_caso$,]
-eixo_x_y = eixo_x_y_pior_caso
-head(eixo_x_y_pior_caso,n=200)$i
-# 23 54
+# eixo_x_y_pior_caso = eixo_x_y[order(eixo_x_y$coeficiente_B,decreasing=F),]
+# head(eixo_x_y_pior_caso)
+# # eixo_x_y_pior_caso = eixo_x_y_pior_caso[eixo_x_y_pior_caso$,]
+# eixo_x_y = eixo_x_y_pior_caso
+# head(eixo_x_y_pior_caso,n=200)$i
+# # 23 54
 # unique(head(eixo_x_y$i,n=250))
 # unique(head(eixo_x_y_sem_a$i,n=250))
 # pior_1 = subset(eixo_x_y,eixo_x_y$i==2)[,1:2]
@@ -112,7 +112,6 @@ head(eixo_x_y_pior_caso,n=200)$i
 # pior_4 = subset(eixo_x_y,eixo_x_y$i==88)[,1:2]
 # pior_5 = subset(eixo_x_y,eixo_x_y$i==3)[,1:2]
 # 
-pior_1 = subset(eixo_x_y,eixo_x_y$i==5)
 # pior_2 = subset(eixo_x_y,eixo_x_y$i==6)
 # serie=pior_2$alvo
 # pior_3 = subset(eixo_x_y,eixo_x_y$i==28)
@@ -120,12 +119,42 @@ pior_1 = subset(eixo_x_y,eixo_x_y$i==5)
 # pior_5 = subset(eixo_x_y,eixo_x_y$i==15)
 # 
 # # pior_1$coeficiente_B
+# unique(eixo_x_y$setor)
+formato_ponto = 21
+######################## enviar  pra paulo ########################
+# LOG LOG
+# "Cons N Básico / Alimentos Processados" # colocar em inglÊs
+setEPS()
+postscript("imagens/melhor_exponencial_log_log.eps")
+# plot(rnorm(100), main="Hey Some Data")
+pior_1 = subset(eixo_x_y,eixo_x_y$i==42 )
 atual = pior_1[,"alvo"]
 previsao = pior_1[,"previsao"]
-plot(main = paste("Outlier\nSSE: ",unique(pior_1$sse),"\nB: ",unique(pior_1$coeficiente_B)," volat.: ",unique(pior_1$volatilidade)),pior_1[,1:2],pch=20)
-lines(pior_1[,c(1,3)],col="blue")
+# main = paste("Outlier\nSSE: ",unique(pior_1$sse),"\nB: ",unique(pior_1$coeficiente_B)," volat.: ",unique(pior_1$volatilidade))
+# "Consumo não Cíclico/Alimentos Processados"
+plot( log(pior_1[,c(1,2)]),xlab="Returns",ylab="Sector Consumption Not Cyclical / Processed Food",pch=formato_ponto,las=1)
+# ,pch=20
+lines(log(pior_1[,c(1,3)]),col="gray",lwd=2)
+dev.off()
 
-# 
+###################################################################
+#SEMILOG
+# LOG no Y, normal no X
+#"Cons N Cíclico / Pr Pessoal Limp"  # colocar em inglÊs
+setEPS()
+postscript("imagens/segunda_melhor_exponencial_semi_log.eps")
+# unique(eixo_x_y$setor)
+pior_1 = subset(eixo_x_y,eixo_x_y$i==29 )
+atual = pior_1[,"alvo"]
+previsao = pior_1[,"previsao"]
+# main = paste("Outlier\nSSE: ",unique(pior_1$sse),"\nB: ",unique(pior_1$coeficiente_B)," volat.: ",unique(pior_1$volatilidade))
+# Consumo não Cíclico/Produtos de uso Pessoal e Limpeza
+plot( pior_1[,"eixo_x_frequencias"],log(pior_1[,"alvo"]),xlab="Returns",ylab="Consumption Not Cyclical /  Products of use Personal and Cleaning" ,pch=formato_ponto)
+lines(pior_1[,"eixo_x_frequencias"],log(pior_1[,"previsao"]),col="gray",lwd=2)
+# mtext("aaaaaaaaaaaaaaadownvar",side=1,line=2,col=1)
+dev.off()
+
+
 # # sum(( atual-previsao)^2)
 # 
 # # # 
@@ -152,19 +181,36 @@ lines(pior_1[,c(1,3)],col="blue")
 # tem que ser o mesmo número
 # length(unique(eixo_x_y$b_volatilidade))
 # eixo_x_y$i
+
+######################## volatilidade * B ########################
+setEPS()
+postscript("imagens/constante.eps")
 volatilidade = (unique(eixo_x_y$volatilidade))
 B = (unique(eixo_x_y$coeficiente_B))
-plot(volatilidade*B,ylim=c(0,2),ylab="Volatility x Coefficient B",xlab="Indices",pch=20)
+# ,pch=16
+plot(volatilidade*B,ylim=c(0,2),cex=1.3,ylab="Volatility x Coefficient B",xlab="Indexes of the sectors",pch=formato_ponto,las=1)
 intercept = regressao.simples(1:(length(volatilidade)),(B*volatilidade))[1]
 slope = regressao.simples(1:(length(volatilidade)),(B*volatilidade))[2]
-abline(a=intercept,b =slope,col=2)
+abline(a=1,b =0,col=1,lwd=2) #"gray"
+dev.off()
+########################################################################
+
+# abline(a=intercept,b =slope,col=2)
+
 # 
 # 
 # 
-# 
-plot(unique(eixo_x_y$coeficiente_B[order(eixo_x_y$coeficiente_B,decreasing=T)]),xlab="Volatility",ylab="Coefficient B",ylim=c(0, 2),col="red",pch=20)
-points(unique(eixo_x_y$volatilidade[order(eixo_x_y$volatilidade,decreasing=F)]),xlab="Indice",ylab="Volatility",col="blue",pch=20)
-# 
+######################### nversamente_proporcionais_b_volatilidade #################################
+setEPS()
+postscript("imagens/inversamente_proporcionais_b_volatilidade.eps")
+legenda = c("Coefficient B","Volatility")
+plot(unique(eixo_x_y$coeficiente_B[order(eixo_x_y$coeficiente_B,decreasing=T)]),xlab="Indexes of the sectors",ylab="Amplitudes",ylim=c(0.6, 1.6),col="black",pch=formato_ponto,las=1)
+points(unique(eixo_x_y$volatilidade[order(eixo_x_y$volatilidade,decreasing=F)]),xlab="Indice",ylab="Volatility",col="black",pch=4)
+legend("topleft", inset=.04,legenda ,col =c("black","black") ,pch=c(21,4), horiz=F)
+dev.off()
+
+####################################################################################################
+# title="Legend",
 # com_b_menor_que_2 = unique(eixo_x_y[eixo_x_y$coeficiente_B>3,"i"])
 # plot(com_b_menor_que_2$coeficiente_B~com_b_menor_que_2$volatilidade,xlab="Volatility",ylab="Coefficient B")
 # 

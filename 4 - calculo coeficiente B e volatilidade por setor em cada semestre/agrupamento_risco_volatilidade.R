@@ -1,6 +1,6 @@
 # dados = read.table("calculo_b_volatilidade.csv",sep=",",head=T)
 dados = read.table("calculo_b_volatilidade_sem_4_outliers.csv",sep=",",head=T)
-
+# periodo=2008
 k = 3
 retorna_cluster = function(periodo,dados,k){
   #   dados = eixo_x_y

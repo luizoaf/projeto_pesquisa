@@ -266,7 +266,7 @@ correcao_coluna_setores = function(df_setores){
 
 plot_previsao_com_B_e_exponencial = function(eixo_x_frequencias,exponencial){
   #   png(paste("Coeficiente B ",coeficiente_B, " SSE ",sse," Incremento ",incremento,".png",sep=""))
-  plot(main=paste("Coeficiente B: ",coeficiente_B,"Volatilidade",volatilidade, "\nSSE:",sse," a: ",a),funcao_distribuicao_probabilidade(serie),ylab="Densidade",xlab="Série de retornos",pch=20)
+  plot(main=paste(colunas[i] ,"Coeficiente B: ",coeficiente_B,"Volatilidade",volatilidade, "\nSSE:",sse," a: ",a),funcao_distribuicao_probabilidade(serie),ylab="Densidade",xlab="Série de retornos",pch=20)
   lines(exponencial~eixo_x_frequencias,col="blue")
   legend("topright", inset=.05, c("F.D.P.","Exponencial"), lwd= 3,col = c("black","blue"), horiz=TRUE)
   #   dev.off()
