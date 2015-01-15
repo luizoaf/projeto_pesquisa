@@ -1,7 +1,9 @@
 # dados = read.table("calculo_b_volatilidade.csv",sep=",",head=T)
-dados = read.table("calculo_b_volatilidade_sem_4_outliers.csv",sep=",",head=T)
+# dados = read.table("calculo_b_volatilidade_sem_4_outliers.csv",sep=",",head=T)
+dados = read.table("calculo_b_volatilidade_mais_pontos.csv",sep=",",head=T)
+# periodo=2008
 k = 3
-retorna_cluster = function(periodo,dados,k){
+retorna_cluster = function(dados,k){
   #   dados = eixo_x_y
   #   k = 3
   #   dados = subset(eixo_x_y,eixo_x_y$tempo==semestre)
@@ -19,9 +21,9 @@ retorna_cluster = function(periodo,dados,k){
   dados$risco_b[dados$cluster == grupos[3]] = "arrojado"
   
   dados$cor = ""
-  dados$cor[dados$cluster == grupos[1]] = "black"
-  dados$cor[dados$cluster == grupos[2]] = "green"
-  dados$cor[dados$cluster == grupos[3]] = "red"
+  dados$cor[dados$risco_b =="moderado"] = "black"
+  dados$cor[dados$risco_b == "arrojado"] = "red"
+  dados$cor[dados$risco_b == "conservador"] = "green"
   
   #   legenda = c("conservador","moderado","arrojado")
   #   plot(main= paste("Para K = ",k,sep =""),agrupamento$coeficiente_B,xlab="indexes",ylab="Coefficient B", col = dados$cor,pch = 20, cex = 0.9)
@@ -41,9 +43,51 @@ retorna_cluster = function(periodo,dados,k){
   #   plot( centroides$centroides,col=centroides$cor, pch = 8,lwd=3)
   #   plot( centroides$volatilidade,col=centroides$cor, pch = 8,lwd=3,xlim=c(0,2.5),ylim=c(0,4.5))
   #   periodo=2008
-  plot(main=periodo,xlab = "indice ignorado" ,ylab = "coeficiente B",centroides$centroides~rep(1,length(centroides$centroides)),col=centroides$cor, pch = 8,lwd=3)
+#   plot(main=periodo,xlab = "indice ignorado" ,ylab = "coeficiente B",centroides$centroides~rep(1,length(centroides$centroides)),col=centroides$cor, pch = 8,lwd=3)
+  plot(main= paste("Para K = ",k,sep =""),dados$volatilidade,dados$coeficiente_B,xlab="Volatility",ylab="Coefficient B", col = dados$cor,pch = 20, cex = 0.9)
   return(centroides)
 }
+centroides = retorna_cluster(dados,3)
+
+pontos_novos = dados
+novos_pontos_classificados = data.frame()
+# ponto_estudado = 1
+for(ponto_estudado in 1:nrow(dados)){
+  ponto_centroide = 1:k # os 3 possiveis centroides dos riscos
+  distancia = sqrt((pontos_novos$coeficiente_B[ponto_estudado] - centroides$centroides[ponto_centroide])^2)
+  todas_distancias = data.frame(distancias = distancia,risco =centroides$risco)
+  indice_menor_distancia = which.min(todas_distancias$distancias)
+  risco = as.character(todas_distancias$risco[indice_menor_distancia])
+  agrupamento = cbind(pontos_novos[ponto_estudado,],risco)
+  distancia_euclidiana = distancia[indice_menor_distancia]
+  agrupamento = cbind(agrupamento,distancia_euclidiana)
+  
+  # calcula SSE de B e volatilidade
+  #   alvo_volatilidade = centroides$volatilidade[ponto_centroide][indice_menor_distancia]
+  #   alvo_B = centroides$coeficiente_B[ponto_centroide][indice_menor_distancia]
+  
+  #   volatilidade = pontos_novos$volatilidade[ponto_estudado]
+  #   coeficiente_b = pontos_novos$coeficiente_B[ponto_estudado]
+  
+  #   sse_volatilidade = sum(( volatilidade-alvo_volatilidade)^2)
+  #   sse_coeficiente_b = sum(( coeficiente_b-alvo_B)^2)
+  
+  #   agrupamento = cbind(agrupamento,sse_volatilidade)
+  #   agrupamento = cbind(agrupamento,sse_coeficiente_b)
+  #   agrupamento = cbind(agrupamento,periodo)
+  novos_pontos_classificados = rbind(novos_pontos_classificados,agrupamento)
+}
+novos_pontos_classificados$cor = ""
+novos_pontos_classificados$cor[novos_pontos_classificados$risco == "moderado"] = "black"
+novos_pontos_classificados$cor[novos_pontos_classificados$risco == "arrojado"] = "red"
+novos_pontos_classificados$cor[novos_pontos_classificados$risco == "conservador"] = "green"
+
+
+write.table(novos_pontos_classificados,file="agrupamento_distancias_B_mais_pontos.csv",row.names=F)
+write.table(centroides,file="centroides_b.csv",row.names=F)
+
+
+
 
 faixa_temporal = unique(dados$tempo)
 novos_pontos_classificados_com_setores = data.frame()

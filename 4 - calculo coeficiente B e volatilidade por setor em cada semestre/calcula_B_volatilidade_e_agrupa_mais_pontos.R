@@ -324,15 +324,15 @@ retorna_cluster = function(dados,k){
   dados$cluster = agrupamento$cluster
   dados$risco_b = ""
   dados$risco_b[dados$cluster == grupos[1]] = "moderado"
-  dados$risco_b[dados$cluster == grupos[2]] = "arrojado"
-  dados$risco_b[dados$cluster == grupos[3]] = "conservador"
+  dados$risco_b[dados$cluster == grupos[2]] = "conservador"
+  dados$risco_b[dados$cluster == grupos[3]] = "arrojado"
   
   dados$cor = ""
   #   dados$cor[dados$cluster == grupos[1]] = "black"
   #   dados$cor[dados$cluster == grupos[2]] = "green"
   #   dados$cor[dados$cluster == grupos[3]] = "red"
-  dados$cor[dados$cluster == grupos[1]] = "green"
-  dados$cor[dados$cluster == grupos[2]] = "black"
+  dados$cor[dados$cluster == grupos[1]] = "black"
+  dados$cor[dados$cluster == grupos[2]] = "green"
   dados$cor[dados$cluster == grupos[3]] = "red"
   
   
@@ -340,8 +340,8 @@ retorna_cluster = function(dados,k){
   #   dados$cor[dados$cluster == grupos[1]] = "black"
   #   dados$cor[dados$cluster == grupos[2]] = "green"
   #   dados$cor[dados$cluster == grupos[3]] = "red"
-  cor[dados$cluster == grupos[1]] = "green"
-  cor[dados$cluster == grupos[2]] = "black"
+  cor[dados$cluster == grupos[1]] = "black"
+  cor[dados$cluster == grupos[2]] = "green"
   cor[dados$cluster == grupos[3]] = "red"
   head(dados)
   #   cluster_ordem = unique( km$cluster)

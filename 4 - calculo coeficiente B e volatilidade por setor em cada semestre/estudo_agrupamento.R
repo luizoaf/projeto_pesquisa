@@ -71,6 +71,13 @@ volatilidade_b = merge(b,volatilidade, by = c("setor","periodo"), all = TRUE)
 
 
 
+
+b_volatilidade = read.table("agrupamento_distancias_b_e_volatilidade_mais_pontos.csv",head=T)
+b = read.table("agrupamento_distancias_B_mais_pontos.csv",head=T)
+volatilidade = read.table("agrupamento_distancias_volatilidade_mais_pontos.csv",head=T)
+
+
+
 b_volatilidade_b = merge(x=b_volatilidade,y=b, by = c("coeficiente_B","volatilidade","periodo"), all = TRUE)
 length(b_volatilidade_b$distancia_euclidiana.x[b_volatilidade_b$distancia_euclidiana.x > b_volatilidade_b$distancia_euclidiana.y ])/length(b_volatilidade_b$distancia_euclidiana.x)
 
@@ -82,9 +89,9 @@ length(b_volatilidade_b$distancia_euclidiana.x[b_volatilidade_b$distancia_euclid
 b_volatilidade_vol = merge(x=volatilidade,y=b, by = c("coeficiente_B","volatilidade","periodo"), all = TRUE)
 length(b_volatilidade_b$distancia_euclidiana.x[b_volatilidade_b$distancia_euclidiana.x > b_volatilidade_b$distancia_euclidiana.y ])/length(b_volatilidade_b$distancia_euclidiana.x)
 
-boxplot(data.frame(dist_b_vol = b_volatilidade_b$distancia_euclidiana.x,
-                   dist_b = b_volatilidade_b$distancia_euclidiana.y,
-                   dist_vol = b_volatilidade_b_vol$distancia_euclidiana.x))
+boxplot(data.frame(dist_b_vol = b_volatilidade$distancia_euclidiana,
+                   dist_b = b$distancia_euclidiana,
+                   dist_vol = volatilidade$distancia_euclidiana))
 
 
 
