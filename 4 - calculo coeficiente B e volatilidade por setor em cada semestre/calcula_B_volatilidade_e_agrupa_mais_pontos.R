@@ -19,6 +19,7 @@ janelamentos_indices = data.frame(inicio = inicio_janelamento,fim = fim_janelame
 eixo_x_y = data.frame()
 # setor = 1
 j=1
+grupo =1
 colunas = c()
 for(i in 1:nrow(janelamentos_indices)){
   #   serie_retornos_normalizado = dado_semestre_retorna_media_serie_retornos_por_setor(periodo,dados)
@@ -30,7 +31,7 @@ for(i in 1:nrow(janelamentos_indices)){
     colunas[j] = names(serie_retornos_normalizado)[coluna]
     serie = serie_retornos_normalizado[,coluna]
     
-    png(filename=paste(j,".png",sep=""),bg="transparent")
+#     png(filename=paste(j,".png",sep=""),bg="transparent")
     #     par(mfrow=c(2,1))
     
     source("previsao_exponencial.R")
@@ -38,8 +39,8 @@ for(i in 1:nrow(janelamentos_indices)){
     #     colnames(eixo_x_y) = c("eixo_x_frequencias","alvo","previsao","sse","a","coeficiente_B","volatilidade","i")
     #     
     ###### OK #####
-    eixo_x_y = rbind(eixo_x_y, cbind(sse,a,coeficiente_B,volatilidade,j))
-    colnames(eixo_x_y) = c("sse","a","coeficiente_B","volatilidade","j")
+    eixo_x_y = rbind(eixo_x_y, cbind(sse,a,coeficiente_B,volatilidade,grupo))
+    colnames(eixo_x_y) = c("sse","a","coeficiente_B","volatilidade","grupo")
     ###############
     ###### ADAPTACAO ######
     #     eixo_x_y = rbind(eixo_x_y, cbind(eixo_x_frequencias,alvo,previsao,sse,a,coeficiente_B,volatilidade,i))
@@ -51,13 +52,15 @@ for(i in 1:nrow(janelamentos_indices)){
     #     eixo_x_y_sem_a = rbind(eixo_x_y_sem_a, cbind(eixo_x_frequencias,alvo,previsao, sse,a,coeficiente_B,volatilidade,i))
     #     #,periodo,setor,coeficiente_B*volatilidade))
     #     colnames(eixo_x_y_sem_a) =  c("eixo_x_frequencias","alvo","previsao","sse","a","coeficiente_B","volatilidade","i")
-    dev.off()
+#     dev.off()
     j= j+1
     # write.table(eixo_x_y,paste(names(serie_retornos_normalizado)[i],grupo_janelamento,"combinacao_janelamento_30_incrementos_0_01_0_28_todas_acoes.csv"),row.names=F,sep=",")
   }
+  grupo = grupo + 1
 }
 
-
+eixo_x_y$setor = colunas[1:nrow(eixo_x_y)]
+eixo_x_y$b_volatilidade = eixo_x_y$coeficiente_B*eixo_x_y$volatilidade
 
 
 
