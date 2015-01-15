@@ -1,5 +1,9 @@
 # dados = read.table("calculo_b_volatilidade.csv",sep=",",head=T)
-dados = read.table("calculo_b_volatilidade_sem_4_outliers.csv",sep=",",head=T)
+# dados = read.table("calculo_b_volatilidade_sem_4_outliers.csv",sep=",",head=T)
+
+dados = read.table("calculo_b_volatilidade_mais_pontos.csv",sep=",",head=T)
+
+
 # periodo=2008
 # dados = dados[order(dados$coeficiente_B,decreasing=T),]
 # dados = dados[5:nrow(dados),] # elimina 4 outliers 
@@ -9,7 +13,8 @@ dados = read.table("calculo_b_volatilidade_sem_4_outliers.csv",sep=",",head=T)
 # dados$coeficiente_B = norm[,1]
 # dados$volatilidade = norm[,2]
 k = 3
-retorna_cluster = function(periodo,dados,k){
+# retorna_cluster = function(periodo,dados,k){
+  retorna_cluster = function(dados,k){
   #   dados = eixo_x_y
   # k = 3
   #   dados = subset(eixo_x_y,eixo_x_y$tempo==semestre)
@@ -44,14 +49,15 @@ retorna_cluster = function(periodo,dados,k){
   centroides$cor[centroides$risco == "moderado"] = "black"
   centroides$cor[centroides$risco == "arrojado"] = "red"
   
-  plot( main=periodo,centroides$coeficiente_B~centroides$volatilidade,col=centroides$cor, pch = 8,lwd=3,xlim=c(0,2.5),ylim=c(0,4.5))
+#   plot( main=periodo,centroides$coeficiente_B~centroides$volatilidade,col=centroides$cor, pch = 8,lwd=3,xlim=c(0,2.5),ylim=c(0,4.5))
+  plot( centroides$coeficiente_B~centroides$volatilidade,col=centroides$cor, pch = 8,lwd=3,xlim=c(0,2.5),ylim=c(0,4.5))
   return(centroides)
 }
 
-faixa_temporal = unique(dados$tempo)
+# faixa_temporal = unique(dados$tempo)
 novos_pontos_classificados_com_setores = data.frame()
 todos_centroides = data.frame()
-periodos = rep(2008:2014,each = 3)
+# periodos = rep(2008:2014,each = 3)
 for( periodo in faixa_temporal){
   #   periodo = 2008
   faixa_temporal_teste = periodo
