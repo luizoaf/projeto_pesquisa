@@ -17,9 +17,9 @@ plot(main= paste("Para K = ",k,sep =""),dados$sse_volatilidade ,ylab="Coefficien
 # legend("topright", inset=.05,legenda , lwd= 3,col =c("green","black","red") , horiz=TRUE)
 
 sse = data.frame(b_volatilidade_sse_volatilidade = b_volatilidade$sse_volatilidade,
-                   b_volatilidade_sse_coeficiente_B = b_volatilidade$sse_coeficiente_b,
-                   coeficiente_b_sse = b$sse_coeficiente_b,
-                   volatilidade_sse = volatilidade$sse_volatilidade)
+                 b_volatilidade_sse_coeficiente_B = b_volatilidade$sse_coeficiente_b,
+                 coeficiente_b_sse = b$sse_coeficiente_b,
+                 volatilidade_sse = volatilidade$sse_volatilidade)
 
 summary(sse)
 
@@ -49,4 +49,51 @@ b_volatilidade_sse_volatilidade = cbind(b_volatilidade_sse_volatilidade,data.fra
 # write.table(file="sse_agrupamentos_diferentes.csv",b_volatilidade_sse_volatilidade,row.names=F)
 write.table(file="sse_agrupamentos_diferentes_sem_4_outliers.csv",b_volatilidade_sse_volatilidade,row.names=F)
 
-aggre
+
+
+
+
+b_volatilidade = read.table("agrupamento_sse_b_e_volatilidade.csv",head=T)
+b = read.table("agrupamento_sse_b.csv",head=T)
+volatilidade = read.table("agrupamento_sse_volatilidade.csv",head=T)
+
+
+# merge(b_volatilidade,b,)
+b_volatilidade_b = merge(x=b_volatilidade,y=b, by = c("setor","periodo"), all = TRUE)
+
+100 -100*length(b_volatilidade_b$risco.x[b_volatilidade_b$risco.y == b_volatilidade_b$risco.x])/length(b_volatilidade_b$risco.x)
+
+b_volatilidade_volatilidade = merge(b_volatilidade,volatilidade, by = c("setor","periodo"), all = TRUE)
+100 -100*length(b_volatilidade_volatilidade$risco.x[b_volatilidade_volatilidade$risco.y == b_volatilidade_volatilidade$risco.x])/length(b_volatilidade_volatilidade$risco.x)
+
+volatilidade_b = merge(b,volatilidade, by = c("setor","periodo"), all = TRUE)
+100 -100*length(volatilidade_b$risco.x[volatilidade_b$risco.y == volatilidade_b$risco.x])/length(volatilidade_b$risco.x)
+
+
+
+b_volatilidade_b = merge(x=b_volatilidade,y=b, by = c("coeficiente_B","volatilidade","periodo"), all = TRUE)
+length(b_volatilidade_b$distancia_euclidiana.x[b_volatilidade_b$distancia_euclidiana.x > b_volatilidade_b$distancia_euclidiana.y ])/length(b_volatilidade_b$distancia_euclidiana.x)
+
+
+b_volatilidade_b_vol = merge(x=b_volatilidade,y=volatilidade, by = c("coeficiente_B","volatilidade","periodo"), all = TRUE)
+length(b_volatilidade_b$distancia_euclidiana.x[b_volatilidade_b$distancia_euclidiana.x > b_volatilidade_b$distancia_euclidiana.y ])/length(b_volatilidade_b$distancia_euclidiana.x)
+
+
+b_volatilidade_vol = merge(x=volatilidade,y=b, by = c("coeficiente_B","volatilidade","periodo"), all = TRUE)
+length(b_volatilidade_b$distancia_euclidiana.x[b_volatilidade_b$distancia_euclidiana.x > b_volatilidade_b$distancia_euclidiana.y ])/length(b_volatilidade_b$distancia_euclidiana.x)
+
+boxplot(data.frame(dist_b_vol = b_volatilidade_b$distancia_euclidiana.x,
+                   dist_b = b_volatilidade_b$distancia_euclidiana.y,
+                   dist_vol = b_volatilidade_b_vol$distancia_euclidiana.x))
+
+
+
+plot(main="Agrupamento por B e volatilidade",b_volatilidade$volatilidade,b_volatilidade$coeficiente_B,col=b_volatilidade$cor,las=1,xlab="Volatility",ylab="Coefficient B")
+plot(main="Agrupamento por B",b$volatilidade,b$coeficiente_B,col=b$cor,las=1,xlab="Volatility",ylab="Coefficient B")
+plot(main="Agrupamento por volatilidade",volatilidade$volatilidade,volatilidade$coeficiente_B,col=volatilidade$cor,las=1,xlab="Volatility",ylab="Coefficient B")
+
+
+plot(main="Agrupamento por B ",b_volatilidade_b$volatilidade.y,b_volatilidade_b$coeficiente_B.y,col=b_volatilidade_b$cor.y)
+
+
+plot(main="Agrupamento por B e volatilidade",b_volatilidade_b$volatilidade.y,b_volatilidade_b$coeficiente_B.y,col=b_volatilidade_b$cor.x)

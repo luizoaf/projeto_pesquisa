@@ -1,12 +1,44 @@
 source("../1_funcoes.R")
-# papeis_da_ibovespa_2007_2012
-# dados = read.csv(file="papeis_da_ibovespa_2007_2012.csv")
-# dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_2.csv")
-# dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_2_com_IBOVESPA.csv")
-# dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_com_IBOVESPA.csv")
-dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_com_95_IBOVESPA.csv")
 
+dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_com_95_IBOVESPA.csv")
 dados = dados[,-2]
+serie_retornos_normalizado_por_setores = dado_semestre_retorna_media_serie_retornos_por_setor_sem_periodo(dados)
+
+
+
+dias_mes = 20
+dias_ano = 240
+total_dias = nrow(dados)
+inicio_janelamento = seq(from=1,to=total_dias,by=dias_mes)
+fim_janelamento = seq(from=1,to=total_dias,by=dias_mes)+dias_ano
+inicio_janelamento[fim_janelamento<total_dias]
+fim_janelamento[fim_janelamento<total_dias]
+
+janelamentos_indices = data.frame(inicio = inicio_janelamento,fim = fim_janelamento)
+
+coluna = 2
+i=1
+for(i in 1:nrow(janelamentos_indices)){
+#   serie_retornos_normalizado = dado_semestre_retorna_media_serie_retornos_por_setor(periodo,dados)
+  serie = dados[janelamentos_indices$inicio[i]:janelamentos_indices$fim[i],coluna]
+  dado_semestre_retorna_media_serie_retornos_por_setor_sem_periodo
+  
+  
+  
+  plot(serie,type="l")
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -83,7 +115,7 @@ for(periodo in faixa_temporal){
     faixa_temporal_por_setores[i] = periodo
     serie = serie_retornos_normalizado[,coluna]
     
-#             png(filename=paste(i,".png",sep=""),bg="transparent")
+    #             png(filename=paste(i,".png",sep=""),bg="transparent")
     #     par(mfrow=c(2,1))
     
     source("previsao_exponencial.R")
@@ -95,8 +127,8 @@ for(periodo in faixa_temporal){
     colnames(eixo_x_y) = c("sse","a","coeficiente_B","volatilidade","i")
     ###############
     ###### ADAPTACAO ######
-#     eixo_x_y = rbind(eixo_x_y, cbind(eixo_x_frequencias,alvo,previsao,sse,a,coeficiente_B,volatilidade,i))
-#     colnames(eixo_x_y) = c("eixo_x_frequencias","alvo","previsao","sse","a","coeficiente_B","volatilidade","i")
+    #     eixo_x_y = rbind(eixo_x_y, cbind(eixo_x_frequencias,alvo,previsao,sse,a,coeficiente_B,volatilidade,i))
+    #     colnames(eixo_x_y) = c("eixo_x_frequencias","alvo","previsao","sse","a","coeficiente_B","volatilidade","i")
     ########################
     
     #     a = 1
@@ -104,7 +136,7 @@ for(periodo in faixa_temporal){
     #     eixo_x_y_sem_a = rbind(eixo_x_y_sem_a, cbind(eixo_x_frequencias,alvo,previsao, sse,a,coeficiente_B,volatilidade,i))
     #     #,periodo,setor,coeficiente_B*volatilidade))
     #     colnames(eixo_x_y_sem_a) =  c("eixo_x_frequencias","alvo","previsao","sse","a","coeficiente_B","volatilidade","i")
-#             dev.off()
+    #             dev.off()
     i= i+1
     # write.table(eixo_x_y,paste(names(serie_retornos_normalizado)[i],grupo_janelamento,"combinacao_janelamento_30_incrementos_0_01_0_28_todas_acoes.csv"),row.names=F,sep=",")
   }
@@ -250,8 +282,8 @@ retorna_cluster = function(dados,k){
   #   dados = subset(eixo_x_y,eixo_x_y$tempo==semestre)
   iter = 45
   agrupamento = dados[,c("coeficiente_B","volatilidade")]
-#     dados[,1] = log(dados[,1])
-#     dados[,2] = log(dados[,2])
+  #     dados[,1] = log(dados[,1])
+  #     dados[,2] = log(dados[,2])
   
   km = kmeans (x = agrupamento, centers = k, iter.max = iter)
   agrupamento$cluster = km$cluster

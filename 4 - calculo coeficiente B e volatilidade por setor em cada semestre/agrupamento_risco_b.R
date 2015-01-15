@@ -15,21 +15,21 @@ retorna_cluster = function(periodo,dados,k){
   dados$cluster = agrupamento$cluster
   dados$risco_b = ""
   dados$risco_b[dados$cluster == grupos[1]] = "moderado"
-  dados$risco_b[dados$cluster == grupos[2]] = "arrojado"
-  dados$risco_b[dados$cluster == grupos[3]] = "conservador"
+  dados$risco_b[dados$cluster == grupos[2]] = "conservador"
+  dados$risco_b[dados$cluster == grupos[3]] = "arrojado"
   
   dados$cor = ""
   dados$cor[dados$cluster == grupos[1]] = "black"
-  dados$cor[dados$cluster == grupos[2]] = "red"
-  dados$cor[dados$cluster == grupos[3]] = "green"
+  dados$cor[dados$cluster == grupos[2]] = "green"
+  dados$cor[dados$cluster == grupos[3]] = "red"
   
-#   legenda = c("conservador","moderado","arrojado")
-#   plot(main= paste("Para K = ",k,sep =""),agrupamento$coeficiente_B,xlab="indexes",ylab="Coefficient B", col = dados$cor,pch = 20, cex = 0.9)
-#   #   plot(main= paste("Para K = ",k,sep =""),agrupamento$volatilidade,xlab="indexes",ylab="Volatility B", col = dados$cor,pch = 20, cex = 0.9)
-#   #   points(km$centers[,1]~km$centers[,2],col=4, pch = 8,lwd=2)
-#   legend("topright", inset=.05,legenda , lwd= 3,col =c("green","black","red") , horiz=TRUE)
+  #   legenda = c("conservador","moderado","arrojado")
+  #   plot(main= paste("Para K = ",k,sep =""),agrupamento$coeficiente_B,xlab="indexes",ylab="Coefficient B", col = dados$cor,pch = 20, cex = 0.9)
+  #   #   plot(main= paste("Para K = ",k,sep =""),agrupamento$volatilidade,xlab="indexes",ylab="Volatility B", col = dados$cor,pch = 20, cex = 0.9)
+  #   #   points(km$centers[,1]~km$centers[,2],col=4, pch = 8,lwd=2)
+  #   legend("topright", inset=.05,legenda , lwd= 3,col =c("green","black","red") , horiz=TRUE)
   centroides = as.data.frame(km$centers)
-  centroides = centroides[order(centroides$coeficiente_B,decreasing=F),]
+  centroides = centroides[order(centroides$coeficiente_B,decreasing=T),]
   #   centroides = centroides[order(centroides$volatilidade,decreasing=T),]
   centroides = cbind(centroides,data.frame(risco = c("conservador","moderado","arrojado")))
   #   centroides = cbind(centroides,data.frame(risco = c("arrojado","conservador")))
@@ -38,9 +38,9 @@ retorna_cluster = function(periodo,dados,k){
   centroides$cor[centroides$risco == "moderado"] = "black"
   centroides$cor[centroides$risco == "arrojado"] = "red"
   
-#   plot( centroides$centroides,col=centroides$cor, pch = 8,lwd=3)
+  #   plot( centroides$centroides,col=centroides$cor, pch = 8,lwd=3)
   #   plot( centroides$volatilidade,col=centroides$cor, pch = 8,lwd=3,xlim=c(0,2.5),ylim=c(0,4.5))
-#   periodo=2008
+  #   periodo=2008
   plot(main=periodo,xlab = "indice ignorado" ,ylab = "coeficiente B",centroides$centroides~rep(1,length(centroides$centroides)),col=centroides$cor, pch = 8,lwd=3)
   return(centroides)
 }
@@ -48,7 +48,7 @@ retorna_cluster = function(periodo,dados,k){
 faixa_temporal = unique(dados$tempo)
 novos_pontos_classificados_com_setores = data.frame()
 for( periodo in faixa_temporal){
-  #   periodo = 2008
+#       periodo = 2008
   faixa_temporal_teste = periodo
   faixa_temporal_treino = setdiff(faixa_temporal, periodo)
   
@@ -69,14 +69,16 @@ for( periodo in faixa_temporal){
   #   points(pontos_novos$volatilidade,col="violet")
   
   novos_pontos_classificados = data.frame()
-  #   ponto_estudado = 1# indices de todos os pontos
-  
+#     ponto_estudado = 1# indices de todos os pontos
   for(ponto_estudado in 1:nrow(pontos_novos)){
     
     ponto_centroide = 1:k # os 3 possiveis centroides dos riscos
     #     distancia = sqrt((pontos_novos$volatilidade[ponto_estudado] - centroides$volatilidade[ponto_centroide])^2 + (pontos_novos$coeficiente_B[ponto_estudado] - centroides$coeficiente_B[ponto_centroide])^2)
+    
     distancia = sqrt((pontos_novos$coeficiente_B[ponto_estudado] - centroides$centroides[ponto_centroide])^2)
     todas_distancias = data.frame(distancias = distancia,risco =centroides$risco)
+    indice_menor_distancia = which.min(todas_distancias$distancias)
+    
     indice_menor_distancia = which.min(todas_distancias$distancias)
     risco = as.character(todas_distancias$risco[indice_menor_distancia])
     
@@ -87,20 +89,22 @@ for( periodo in faixa_temporal){
     
     # calcula SSE de B e volatilidade
     #     alvo_volatilidade = centroides$centroides[ponto_centroide][indice_menor_distancia]
-    alvo_B = centroides$centroides[ponto_centroide][indice_menor_distancia]
+#     alvo_B = centroides$centroides[ponto_centroide][indice_menor_distancia]
     
     #     volatilidade = pontos_novos$volatilidade[ponto_estudado]
-    coeficiente_b = pontos_novos$coeficiente_B[ponto_estudado]
+#     coeficiente_b = pontos_novos$coeficiente_B[ponto_estudado]
     
     #     sse_volatilidade = sum(( volatilidade-alvo_volatilidade)^2)
-    sse_coeficiente_b = sum(( coeficiente_b-alvo_B)^2)
+    #     sse_coeficiente_b = sum(( coeficiente_b-alvo_B)^2)
+#     distancia_euclidiana = distancia[indice_menor_distancia]
+#     agrupamento = cbind(agrupamento,distancia_euclidiana)
     
     #     agrupamento = cbind(agrupamento,sse_volatilidade)
-    agrupamento = cbind(agrupamento,sse_coeficiente_b)
+#     agrupamento = cbind(agrupamento,sse_coeficiente_b)
     agrupamento = cbind(agrupamento,periodo)
     novos_pontos_classificados = rbind(novos_pontos_classificados,agrupamento)
   }
- 
+  
   agrupamento_periodo = merge(novos_pontos_classificados,teste, by = intersect(names(novos_pontos_classificados), names(teste)))
   novos_pontos_classificados_com_setores = rbind(novos_pontos_classificados_com_setores,agrupamento_periodo)
   
@@ -132,9 +136,9 @@ novos_pontos_classificados_com_setores = novos_pontos_classificados_com_setores[
 
 
 novos_pontos_classificados_com_setores$cor = ""
-novos_pontos_classificados_com_setores$cor[novos_pontos_classificados$risco == "moderado"] = "black"
-novos_pontos_classificados_com_setores$cor[novos_pontos_classificados$risco == "arrojado"] = "red"
-novos_pontos_classificados_com_setores$cor[novos_pontos_classificados$risco == "conservador"] = "green"
-
+novos_pontos_classificados_com_setores$cor[novos_pontos_classificados_com_setores$risco == "moderado"] = "black"
+novos_pontos_classificados_com_setores$cor[novos_pontos_classificados_com_setores$risco == "arrojado"] = "red"
+novos_pontos_classificados_com_setores$cor[novos_pontos_classificados_com_setores$risco == "conservador"] = "green"
+plot(main="Agrupamento por B",novos_pontos_classificados_com_setores$volatilidade,novos_pontos_classificados_com_setores$coeficiente_B,col=novos_pontos_classificados_com_setores$cor,las=1,xlab="Volatility",ylab="Coefficient B")
 write.table(novos_pontos_classificados_com_setores,file="agrupamento_sse_b.csv",row.names=F)
 # write.table(novos_pontos_classificados_com_setores,file="agrupamento_sse_b_k_2.csv",row.names=F)

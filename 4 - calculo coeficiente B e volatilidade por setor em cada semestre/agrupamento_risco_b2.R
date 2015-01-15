@@ -1,6 +1,6 @@
 # dados = read.table("calculo_b_volatilidade.csv",sep=",",head=T)
 dados = read.table("calculo_b_volatilidade_sem_4_outliers.csv",sep=",",head=T)
-# periodo=2008
+periodo=2008
 # dados = dados[order(dados$coeficiente_B,decreasing=T),]
 # dados = dados[5:nrow(dados),] # elimina 4 outliers 
 # names(dados)
@@ -15,7 +15,8 @@ retorna_cluster = function(periodo,dados,k){
   #   dados = subset(eixo_x_y,eixo_x_y$tempo==semestre)
   iter = 45
   #   k=2
-  agrupamento = dados[,c("coeficiente_B","volatilidade")]
+  agrupamento = data.frame(coeficiente_B = dados[,c("coeficiente_B")])
+#   agrupamento = dados[,c("coeficiente_B","volatilidade")]
   km = kmeans (x = agrupamento, centers = k, iter.max = iter)
   agrupamento$cluster = km$cluster
   grupos = unique(km$cluster)
@@ -36,15 +37,16 @@ retorna_cluster = function(periodo,dados,k){
   #   points(km$centers[,1]~km$centers[,2],col=4, pch = 8,lwd=2)
   #   legend("topright", inset=.05,legenda , lwd= 3,col =c("green","black","red") , horiz=TRUE)
   centroides = as.data.frame(km$centers)
-  centroides = centroides[order(centroides$volatilidade,decreasing=T),]
-  centroides = cbind(centroides,data.frame(risco = c("arrojado","moderado","conservador")))
+  centroides = centroides[order(centroides$coeficiente_B,decreasing=T),]
+  centroides = cbind(centroides,data.frame(risco = c("conservador","moderado","arrojado")))
   #   centroides = cbind(centroides,data.frame(risco = c("arrojado","conservador")))
   centroides$cor = ""
   centroides$cor[centroides$risco == "conservador"] = "green"
   centroides$cor[centroides$risco == "moderado"] = "black"
   centroides$cor[centroides$risco == "arrojado"] = "red"
   
-  plot( main=periodo,centroides$coeficiente_B~centroides$volatilidade,col=centroides$cor, pch = 8,lwd=3,xlim=c(0,2.5),ylim=c(0,4.5))
+#   plot( main=periodo,centroides$coeficiente_B~centroides$volatilidade,col=centroides$cor, pch = 8,lwd=3,xlim=c(0,2.5),ylim=c(0,4.5))
+  plot(main=periodo,xlab = "indice ignorado" ,ylab = "coeficiente B",centroides$centroides~rep(1,length(centroides$centroides)),col=centroides$cor, pch = 8,lwd=3)
   return(centroides)
 }
 

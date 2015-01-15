@@ -82,16 +82,16 @@ for( periodo in faixa_temporal){
     agrupamento = cbind(agrupamento,distancia_euclidiana)
     
     # calcula SSE de B e volatilidade
-    alvo_volatilidade = centroides$centroides[ponto_centroide][indice_menor_distancia]
+#     alvo_volatilidade = centroides$centroides[ponto_centroide][indice_menor_distancia]
     #     alvo_B = centroides$centroides[ponto_centroide][indice_menor_distancia]
     
-    volatilidade = pontos_novos$volatilidade[ponto_estudado]
+#     volatilidade = pontos_novos$volatilidade[ponto_estudado]
     #     coeficiente_b = pontos_novos$coeficiente_B[ponto_estudado]
     
-    sse_volatilidade = sum(( volatilidade-alvo_volatilidade)^2)
+#     sse_volatilidade = sum(( volatilidade-alvo_volatilidade)^2)
     #     sse_coeficiente_b = sum(( coeficiente_b-alvo_B)^2)
     
-    agrupamento = cbind(agrupamento,sse_volatilidade)
+#     agrupamento = cbind(agrupamento,sse_volatilidade)
     #     agrupamento = cbind(agrupamento,sse_coeficiente_b)
     agrupamento = cbind(agrupamento,periodo)
     novos_pontos_classificados = rbind(novos_pontos_classificados,agrupamento)
@@ -120,9 +120,9 @@ novos_pontos_classificados_com_setores = novos_pontos_classificados_com_setores[
 novos_pontos_classificados_com_setores = novos_pontos_classificados_com_setores[,-9]#remove tempo, fica só periodo(teste)
 
 novos_pontos_classificados_com_setores$cor = ""
-novos_pontos_classificados_com_setores$cor[novos_pontos_classificados$risco == "moderado"] = "black"
-novos_pontos_classificados_com_setores$cor[novos_pontos_classificados$risco == "arrojado"] = "red"
-novos_pontos_classificados_com_setores$cor[novos_pontos_classificados$risco == "conservador"] = "green"
-
+novos_pontos_classificados_com_setores$cor[novos_pontos_classificados_com_setores$risco == "moderado"] = "black"
+novos_pontos_classificados_com_setores$cor[novos_pontos_classificados_com_setores$risco == "arrojado"] = "red"
+novos_pontos_classificados_com_setores$cor[novos_pontos_classificados_com_setores$risco == "conservador"] = "green"
+plot(main="Agrupamento pela volatilidade",novos_pontos_classificados_com_setores$volatilidade,novos_pontos_classificados_com_setores$coeficiente_B,col=novos_pontos_classificados_com_setores$cor,las=1,xlab="Volatility",ylab="Coefficient B")
 write.table(novos_pontos_classificados_com_setores,file="agrupamento_sse_volatilidade.csv",row.names=F)
 # write.table(novos_pontos_classificados_com_setores,file="agrupamento_sse_volatilidade_k_2.csv",row.names=F)
