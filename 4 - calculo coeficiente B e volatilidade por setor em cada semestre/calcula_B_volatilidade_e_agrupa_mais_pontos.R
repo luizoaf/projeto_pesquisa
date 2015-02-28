@@ -1,35 +1,55 @@
 source("../1_funcoes.R")
 
 dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_com_95_IBOVESPA.csv")
+names(dados)
+# eliminação da ibovespa
 dados = dados[,-2]
-serie_retornos_normalizado_por_setores = dado_semestre_retorna_media_serie_retornos_por_setor_sem_periodo(dados)
 
+#Datas precisam estar da mais recente para a mais antiga
+dados = inverte_indices_data_frame(dados)
+
+#eliminação da data
+dados = dados[,-1]
+
+series_temporais_setores = calcula_series_temporais_dos_setores(dados)
+# head(series_temporais_setores)
+
+series_temporais_setores = cria_serie_retornos(series_temporais_setores)
+
+
+# serie_retornos_normalizado_por_setores = dado_semestre_retorna_media_serie_retornos_por_setor_sem_periodo(dados)
+
+# write.table(x = series_temporais_setores,file="series_temporais_setores.csv",row.names=F)
 
 
 dias_mes = 20
 dias_ano = 240
-total_dias = nrow(dados)
+total_dias = nrow(series_temporais_setores)
 inicio_janelamento = seq(from=1,to=total_dias,by=dias_mes)
 fim_janelamento = seq(from=1,to=total_dias,by=dias_mes)+dias_ano
-inicio_janelamento[fim_janelamento<total_dias]
-fim_janelamento[fim_janelamento<total_dias]
+# inicio_janelamento[fim_janelamento<total_dias]
+# fim_janelamento[fim_janelamento<total_dias]
 
 janelamentos_indices = data.frame(inicio = inicio_janelamento,fim = fim_janelamento)
+janelamentos_indices = janelamentos_indices[janelamentos_indices$fim<=total_dias,]
+
+# write.table(x = janelamentos_indices,file="janelamentos_indices.csv",row.names=F)
 
 eixo_x_y = data.frame()
 # setor = 1
 j=1
 grupo =1
 colunas = c()
+# i=1
 for(i in 1:nrow(janelamentos_indices)){
   #   serie_retornos_normalizado = dado_semestre_retorna_media_serie_retornos_por_setor(periodo,dados)
-  serie_retornos_normalizado = serie_retornos_normalizado_por_setores[janelamentos_indices$inicio[i]:janelamentos_indices$fim[i],]
+  series_temporais = series_temporais_setores[janelamentos_indices$inicio[i]:janelamentos_indices$fim[i],]
   #   dado_semestre_retorna_media_serie_retornos_por_setor_sem_periodo
   
   #   plot(serie,type="l")
-  for(coluna in 1:length(names(serie_retornos_normalizado))){
-    colunas[j] = names(serie_retornos_normalizado)[coluna]
-    serie = serie_retornos_normalizado[,coluna]
+  for(coluna in 1:length(names(series_temporais))){
+    colunas[j] = names(series_temporais)[coluna]
+    serie = series_temporais[,coluna]
     
 #     png(filename=paste(j,".png",sep=""),bg="transparent")
     #     par(mfrow=c(2,1))
@@ -54,7 +74,7 @@ for(i in 1:nrow(janelamentos_indices)){
     #     colnames(eixo_x_y_sem_a) =  c("eixo_x_frequencias","alvo","previsao","sse","a","coeficiente_B","volatilidade","i")
 #     dev.off()
     j= j+1
-    # write.table(eixo_x_y,paste(names(serie_retornos_normalizado)[i],grupo_janelamento,"combinacao_janelamento_30_incrementos_0_01_0_28_todas_acoes.csv"),row.names=F,sep=",")
+    # write.table(eixo_x_y,paste(names(series_temporais)[i],grupo_janelamento,"combinacao_janelamento_30_incrementos_0_01_0_28_todas_acoes.csv"),row.names=F,sep=",")
   }
   grupo = grupo + 1
 }
@@ -274,6 +294,7 @@ dev.off()
 # eixo_x_y$i
 
 ######################## volatilidade * B ########################
+formato_ponto = 21
 setEPS()
 postscript("imagens/constante.eps")
 volatilidade = (unique(eixo_x_y$volatilidade))
