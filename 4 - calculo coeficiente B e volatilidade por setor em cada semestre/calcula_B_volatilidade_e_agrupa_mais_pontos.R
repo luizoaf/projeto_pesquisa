@@ -12,6 +12,15 @@ dados = inverte_indices_data_frame(dados)
 dados = dados[,-1]
 
 series_temporais_setores = calcula_series_temporais_dos_setores(dados)
+par(mfrow=c(3,3))
+plot(main = names(series_temporais_setores)[1],series_temporais_setores[,1],ylab="valor")
+plot(main = names(series_temporais_setores)[2],series_temporais_setores[,2],ylab="valor")
+plot(main = names(series_temporais_setores)[3],series_temporais_setores[,3],ylab="valor")
+plot(main = names(series_temporais_setores)[4],series_temporais_setores[,4],ylab="valor")
+plot(main = names(series_temporais_setores)[5],series_temporais_setores[,5],ylab="valor")
+plot(main = names(series_temporais_setores)[6],series_temporais_setores[,6],ylab="valor")
+plot(main = names(series_temporais_setores)[7],series_temporais_setores[,7],ylab="valor")
+
 # head(series_temporais_setores)
 
 series_temporais_setores = cria_serie_retornos(series_temporais_setores)

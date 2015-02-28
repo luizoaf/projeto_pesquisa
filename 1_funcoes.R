@@ -1,4 +1,9 @@
-require(minpack.lm)
+if(require(minpack.lm) == FALSE){
+  install.packages("minpack.lm")
+}
+
+require(minpack.lm) 
+
 normalizacao_transformacao_linear = function(lim_min_norm,lim_max_norm,serie_temporal){
   dados_normalizados = (((lim_max_norm - lim_min_norm)*(serie_temporal - min(serie_temporal)))/(max(serie_temporal) - min(serie_temporal))) +lim_min_norm
   return(dados_normalizados)
@@ -18,13 +23,12 @@ funcao_modulos_das_diferencas = function(dados,coluna){
   serie_retornos_normalizado
 }
 
-cria_tabela_serie_retornos_de_todas_as_acoes = function(dados_periodo){
-  
+cria_serie_retornos = function(dados_periodo){
   dados_periodo = na.omit(dados_periodo)
-  dados_periodo = dados_periodo[,-1] #eliminação da data
+#   dados_periodo = dados_periodo[,-1] #eliminação da data
   
   #Datas precisam estar da mais recente para a mais antiga
-  dados_periodo = inverte_indices_data_frame(dados_periodo)
+#   dados_periodo = inverte_indices_data_frame(dados_periodo)
   
   serie_retorno_todas_colunas = data.frame(funcao_modulos_das_diferencas(dados_periodo,names(dados_periodo)[1]))
   for(i in 2:ncol(dados_periodo)){
@@ -155,7 +159,7 @@ warning=function(cond) {
 finally={
 }
   )    
-  return(out)
+return(out)
 }
 
 # criaÃ§Ã£o fdp seguindo a estratÃ©gia utilizada por Paulo
@@ -344,16 +348,42 @@ setores_100_porcento_sem_periodo = function(dados){
   setores_100_porcento = as.character(setores_100_porcento)
   return(setores_100_porcento)
 }
-
-dado_semestre_retorna_media_serie_retornos_por_setor_sem_periodo = function(dados){
-#   semestre_acoes = subset(dados,dados$datas==semestre)
+calcula_series_temporais_dos_setores = function(dados){
+  #   semestre_acoes = subset(dados,dados$datas==semestre)
   serie_retornos_por_semestre = dados[,2:ncol(dados)]
   #   serie_retornos_por_semestre = cria_tabela_serie_retornos_de_todas_as_acoes(semestre_acoes)
   setores_media_acoes = data.frame(1)
   setores_100_porcento = setores_100_porcento_sem_periodo(dados)
-#   setor = setores_100_porcento[1]
+  #     setor = setores_100_porcento[1]
+  relacao_setores_acoes_menos_acoes = relacao_setores_acoes_sem_periodo(dados)
   for( setor in setores_100_porcento){
+    acoes_do_setor = paste(relacao_setores_acoes_menos_acoes$codigo[relacao_setores_acoes_menos_acoes$setores==setor],".SA",sep="")
+    if(length(acoes_do_setor)!=1){ # nao ira calcular a media quando tiver apenas 1 acao
+      medias_por_setor = apply(serie_retornos_por_semestre[,acoes_do_setor],MARGIN=1,FUN=mean)
+    }else{
+      medias_por_setor = serie_retornos_por_semestre[,acoes_do_setor]
+    }
+    setores_media_acoes = cbind(setores_media_acoes,medias_por_setor)
+  }
+    setores_media_acoes = setores_media_acoes[,-1]
+#     head(setores_media_acoes)
+  ### mudanca de ordem ###
+#   setores_media_acoes = cria_tabela_serie_retornos_de_todas_as_acoes(setores_media_acoes)
+  
+  colnames(setores_media_acoes) = setores_100_porcento_sem_periodo(dados)
+  return(setores_media_acoes)
+}
+
+
+dado_semestre_retorna_media_serie_retornos_por_setor_sem_periodo = function(dados){
+  #   semestre_acoes = subset(dados,dados$datas==semestre)
+  serie_retornos_por_semestre = dados[,2:ncol(dados)]
+  #   serie_retornos_por_semestre = cria_tabela_serie_retornos_de_todas_as_acoes(semestre_acoes)
+  setores_media_acoes = data.frame(1)
+  setores_100_porcento = setores_100_porcento_sem_periodo(dados)
+#     setor = setores_100_porcento[1]
     relacao_setores_acoes_menos_acoes = relacao_setores_acoes_sem_periodo(dados)
+  for( setor in setores_100_porcento){
     acoes_do_setor = paste(relacao_setores_acoes_menos_acoes$codigo[relacao_setores_acoes_menos_acoes$setores==setor],".SA",sep="")
     if(length(acoes_do_setor)!=1){ # nao ira calcular a media quando tiver apenas 1 acao
       medias_por_setor = apply(serie_retornos_por_semestre[,acoes_do_setor],MARGIN=1,FUN=mean)
