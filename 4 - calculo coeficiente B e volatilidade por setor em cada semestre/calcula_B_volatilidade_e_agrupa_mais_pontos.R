@@ -1,3 +1,4 @@
+setwd("C:/Users/V1d4 L0k4/Desktop/Projetos SourceTree/4 - calculo coeficiente B e volatilidade por setor em cada semestre")
 source("../1_funcoes.R")
 
 dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_com_95_IBOVESPA.csv")
@@ -12,18 +13,28 @@ dados = inverte_indices_data_frame(dados)
 dados = dados[,-1]
 
 series_temporais_setores = calcula_series_temporais_dos_setores(dados)
-par(mfrow=c(3,3))
-plot(main = names(series_temporais_setores)[1],series_temporais_setores[,1],ylab="valor")
-plot(main = names(series_temporais_setores)[2],series_temporais_setores[,2],ylab="valor")
-plot(main = names(series_temporais_setores)[3],series_temporais_setores[,3],ylab="valor")
-plot(main = names(series_temporais_setores)[4],series_temporais_setores[,4],ylab="valor")
-plot(main = names(series_temporais_setores)[5],series_temporais_setores[,5],ylab="valor")
-plot(main = names(series_temporais_setores)[6],series_temporais_setores[,6],ylab="valor")
-plot(main = names(series_temporais_setores)[7],series_temporais_setores[,7],ylab="valor")
+# par(mfrow=c(3,3))
+# plot(main = names(series_temporais_setores)[1],series_temporais_setores[,1],ylab="valor")
+# plot(main = names(series_temporais_setores)[2],series_temporais_setores[,2],ylab="valor")
+# plot(main = names(series_temporais_setores)[3],series_temporais_setores[,3],ylab="valor")
+# plot(main = names(series_temporais_setores)[4],series_temporais_setores[,4],ylab="valor")
+# plot(main = names(series_temporais_setores)[5],series_temporais_setores[,5],ylab="valor")
+# plot(main = names(series_temporais_setores)[6],series_temporais_setores[,6],ylab="valor")
+# plot(main = names(series_temporais_setores)[7],series_temporais_setores[,7],ylab="valor")
 
 # head(series_temporais_setores)
 
 series_temporais_setores = cria_serie_retornos(series_temporais_setores)
+
+# 
+# par(mfrow=c(3,3))
+# plot(main = names(series_temporais_setores)[1],series_temporais_setores[,1],ylab="valor",type="l")
+# plot(main = names(series_temporais_setores)[2],series_temporais_setores[,2],ylab="valor",type="l")
+# plot(main = names(series_temporais_setores)[3],series_temporais_setores[,3],ylab="valor",type="l")
+# plot(main = names(series_temporais_setores)[4],series_temporais_setores[,4],ylab="valor",type="l")
+# plot(main = names(series_temporais_setores)[5],series_temporais_setores[,5],ylab="valor",type="l")
+# plot(main = names(series_temporais_setores)[6],series_temporais_setores[,6],ylab="valor",type="l")
+# plot(main = names(series_temporais_setores)[7],series_temporais_setores[,7],ylab="valor",type="l")
 
 
 # serie_retornos_normalizado_por_setores = dado_semestre_retorna_media_serie_retornos_por_setor_sem_periodo(dados)
@@ -57,10 +68,33 @@ for(i in 1:nrow(janelamentos_indices)){
   
   #   plot(serie,type="l")
   for(coluna in 1:length(names(series_temporais))){
+    #             coluna = 1
     colunas[j] = names(series_temporais)[coluna]
     serie = series_temporais[,coluna]
+    ############ VaR = Value At Risk #############
     
-#     png(filename=paste(j,".png",sep=""),bg="transparent")
+    #probabilidade de perda_anormal% de perdas anormais
+    #     perda_anormal = .05
+    z_1 = qnorm(.01)
+    z_5= qnorm(.05)
+    z_10 = qnorm(.1)
+    
+    var_1 = mean(serie) + z_1 * sd(serie)
+    var_5 = mean(serie) + z_5 * sd(serie)
+    var_10 = mean(serie) + z_10 * sd(serie)
+    
+    
+    #     var_1 = mean(serie) - sqrt(var(serie))*qnorm(.99)
+    #     var_5 = mean(serie) - sqrt(var(serie))*qnorm(.95)
+    #     var_10 = mean(serie) - sqrt(var(serie))*qnorm(.9)
+    
+    #     var_1 = as.numeric(VaR(serie,p=.99,method "modified"))
+    #     var_5 =  as.numeric(VaR(serie,p=.95,method="modified"))
+    #     var_10 =  as.numeric(VaR(serie,p=.9,method ="modified"))
+    ##############################################
+    
+    
+    #     png(filename=paste(j,".png",sep=""),bg="transparent")
     #     par(mfrow=c(2,1))
     
     source("previsao_exponencial.R")
@@ -68,8 +102,8 @@ for(i in 1:nrow(janelamentos_indices)){
     #     colnames(eixo_x_y) = c("eixo_x_frequencias","alvo","previsao","sse","a","coeficiente_B","volatilidade","i")
     #     
     ###### OK #####
-    eixo_x_y = rbind(eixo_x_y, cbind(sse,a,coeficiente_B,volatilidade,grupo))
-    colnames(eixo_x_y) = c("sse","a","coeficiente_B","volatilidade","grupo")
+    eixo_x_y = rbind(eixo_x_y, cbind(sse,a,coeficiente_B,volatilidade,grupo,var_1,var_5,var_10))
+    colnames(eixo_x_y) = c("sse","a","coeficiente_B","volatilidade","grupo","var_1","var_5","var_10")
     ###############
     ###### ADAPTACAO ######
     #     eixo_x_y = rbind(eixo_x_y, cbind(eixo_x_frequencias,alvo,previsao,sse,a,coeficiente_B,volatilidade,i))
@@ -81,7 +115,7 @@ for(i in 1:nrow(janelamentos_indices)){
     #     eixo_x_y_sem_a = rbind(eixo_x_y_sem_a, cbind(eixo_x_frequencias,alvo,previsao, sse,a,coeficiente_B,volatilidade,i))
     #     #,periodo,setor,coeficiente_B*volatilidade))
     #     colnames(eixo_x_y_sem_a) =  c("eixo_x_frequencias","alvo","previsao","sse","a","coeficiente_B","volatilidade","i")
-#     dev.off()
+    #     dev.off()
     j= j+1
     # write.table(eixo_x_y,paste(names(series_temporais)[i],grupo_janelamento,"combinacao_janelamento_30_incrementos_0_01_0_28_todas_acoes.csv"),row.names=F,sep=",")
   }
@@ -90,18 +124,21 @@ for(i in 1:nrow(janelamentos_indices)){
 
 eixo_x_y$setor = colunas[1:nrow(eixo_x_y)]
 eixo_x_y$b_volatilidade = eixo_x_y$coeficiente_B*eixo_x_y$volatilidade
+cor(data.frame(eixo_x_y$a,eixo_x_y$coeficiente_B,eixo_x_y$volatilidade,eixo_x_y$var_1,eixo_x_y$var_5,eixo_x_y$var_10))
 
 
 
 
+# write.table(eixo_x_y,row.names=F,file="VaR.csv")
 
 
+plot(eixo_x_y$coeficiente_B,type="l",ylim=c(-2,3))
+lines(eixo_x_y$var_1,col="red")
+lines(eixo_x_y$var_5,col="blue")
+lines(eixo_x_y$var_10,col="green")
 
-
-
-
-
-
+nrow(eixo_x_y)
+nrow(na.omit(eixo_x_y))
 
 
 

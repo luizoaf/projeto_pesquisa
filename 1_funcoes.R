@@ -2,6 +2,12 @@ if(require(minpack.lm) == FALSE){
   install.packages("minpack.lm")
 }
 
+# calcular o VaR - Value At Risk
+if(require(PerformanceAnalytics) == FALSE){
+  install.packages("PerformanceAnalytics")
+}
+
+require(PerformanceAnalytics)
 require(minpack.lm) 
 
 normalizacao_transformacao_linear = function(lim_min_norm,lim_max_norm,serie_temporal){
@@ -354,7 +360,7 @@ calcula_series_temporais_dos_setores = function(dados){
   #   serie_retornos_por_semestre = cria_tabela_serie_retornos_de_todas_as_acoes(semestre_acoes)
   setores_media_acoes = data.frame(1)
   setores_100_porcento = setores_100_porcento_sem_periodo(dados)
-  #     setor = setores_100_porcento[1]
+#       setor = setores_100_porcento[6]
   relacao_setores_acoes_menos_acoes = relacao_setores_acoes_sem_periodo(dados)
   for( setor in setores_100_porcento){
     acoes_do_setor = paste(relacao_setores_acoes_menos_acoes$codigo[relacao_setores_acoes_menos_acoes$setores==setor],".SA",sep="")
