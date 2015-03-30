@@ -51,7 +51,7 @@ centroides = retorna_cluster(dados,3)
 
 pontos_novos = dados
 novos_pontos_classificados = data.frame()
-# ponto_estudado = 1
+# ponto_estudado = 2
 for(ponto_estudado in 1:nrow(dados)){
   ponto_centroide = 1:k # os 3 possiveis centroides dos riscos
   distancia = sqrt((pontos_novos$coeficiente_B[ponto_estudado] - centroides$centroides[ponto_centroide])^2)
@@ -82,6 +82,17 @@ novos_pontos_classificados$cor[novos_pontos_classificados$risco == "moderado"] =
 novos_pontos_classificados$cor[novos_pontos_classificados$risco == "arrojado"] = "red"
 novos_pontos_classificados$cor[novos_pontos_classificados$risco == "conservador"] = "green"
 
+
+novos_pontos_classificados$risco_beta = ""
+novos_pontos_classificados$risco_beta[novos_pontos_classificados$beta == 1] = "moderado"
+novos_pontos_classificados$risco_beta[novos_pontos_classificados$beta > 1] = "arrojado"
+novos_pontos_classificados$risco_beta[novos_pontos_classificados$beta < 1] = "convervador"
+
+intersect(novos_pontos_classificados$risco,novos_pontos_classificados$risco_beta)
+length(novos_pontos_classificados$risco[as.character(novos_pontos_classificados$risco) == as.character(novos_pontos_classificados$risco_beta)])/nrow(novos_pontos_classificados)
+
+df = data.frame(b = novos_pontos_classificados$risco, beta = novos_pontos_classificados$risco_beta)
+head(df)
 
 write.table(novos_pontos_classificados,file="agrupamento_distancias_B_mais_pontos.csv",row.names=F)
 write.table(centroides,file="centroides_b.csv",row.names=F)

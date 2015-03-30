@@ -29,12 +29,27 @@ funcao_modulos_das_diferencas = function(dados,coluna){
   serie_retornos_normalizado
 }
 
-cria_serie_retornos = function(dados_periodo){
+normalizacao_log_da_serie_temporal = function(dados_periodo){
   dados_periodo = na.omit(dados_periodo)
-#   dados_periodo = dados_periodo[,-1] #eliminação da data
+  #   dados_periodo = dados_periodo[,-1] #eliminação da data
   
   #Datas precisam estar da mais recente para a mais antiga
-#   dados_periodo = inverte_indices_data_frame(dados_periodo)
+  #   dados_periodo = inverte_indices_data_frame(dados_periodo)
+  
+  serie_retorno_todas_colunas = data.frame(funcao_modulos_das_diferencas(dados_periodo,names(dados_periodo)[1]))
+  for(i in 2:ncol(dados_periodo)){
+    serie_retorno_todas_colunas = cbind(serie_retorno_todas_colunas,funcao_modulos_das_diferencas(dados_periodo,names(dados_periodo)[i]))
+  }
+  colnames(serie_retorno_todas_colunas) = names(dados_periodo)
+  return(serie_retorno_todas_colunas)
+}
+
+cria_serie_retornos = function(dados_periodo){
+  dados_periodo = na.omit(dados_periodo)
+  #   dados_periodo = dados_periodo[,-1] #eliminação da data
+  
+  #Datas precisam estar da mais recente para a mais antiga
+  #   dados_periodo = inverte_indices_data_frame(dados_periodo)
   
   serie_retorno_todas_colunas = data.frame(funcao_modulos_das_diferencas(dados_periodo,names(dados_periodo)[1]))
   for(i in 2:ncol(dados_periodo)){
@@ -360,7 +375,7 @@ calcula_series_temporais_dos_setores = function(dados){
   #   serie_retornos_por_semestre = cria_tabela_serie_retornos_de_todas_as_acoes(semestre_acoes)
   setores_media_acoes = data.frame(1)
   setores_100_porcento = setores_100_porcento_sem_periodo(dados)
-#       setor = setores_100_porcento[6]
+  #       setor = setores_100_porcento[6]
   relacao_setores_acoes_menos_acoes = relacao_setores_acoes_sem_periodo(dados)
   for( setor in setores_100_porcento){
     acoes_do_setor = paste(relacao_setores_acoes_menos_acoes$codigo[relacao_setores_acoes_menos_acoes$setores==setor],".SA",sep="")
@@ -371,10 +386,10 @@ calcula_series_temporais_dos_setores = function(dados){
     }
     setores_media_acoes = cbind(setores_media_acoes,medias_por_setor)
   }
-    setores_media_acoes = setores_media_acoes[,-1]
-#     head(setores_media_acoes)
+  setores_media_acoes = setores_media_acoes[,-1]
+  #     head(setores_media_acoes)
   ### mudanca de ordem ###
-#   setores_media_acoes = cria_tabela_serie_retornos_de_todas_as_acoes(setores_media_acoes)
+  #   setores_media_acoes = cria_tabela_serie_retornos_de_todas_as_acoes(setores_media_acoes)
   
   colnames(setores_media_acoes) = setores_100_porcento_sem_periodo(dados)
   return(setores_media_acoes)
@@ -387,8 +402,8 @@ dado_semestre_retorna_media_serie_retornos_por_setor_sem_periodo = function(dado
   #   serie_retornos_por_semestre = cria_tabela_serie_retornos_de_todas_as_acoes(semestre_acoes)
   setores_media_acoes = data.frame(1)
   setores_100_porcento = setores_100_porcento_sem_periodo(dados)
-#     setor = setores_100_porcento[1]
-    relacao_setores_acoes_menos_acoes = relacao_setores_acoes_sem_periodo(dados)
+  #     setor = setores_100_porcento[1]
+  relacao_setores_acoes_menos_acoes = relacao_setores_acoes_sem_periodo(dados)
   for( setor in setores_100_porcento){
     acoes_do_setor = paste(relacao_setores_acoes_menos_acoes$codigo[relacao_setores_acoes_menos_acoes$setores==setor],".SA",sep="")
     if(length(acoes_do_setor)!=1){ # nao ira calcular a media quando tiver apenas 1 acao
@@ -492,6 +507,30 @@ setor_por_periodo = function(semestre,dados){
   colnames(setores_media_acoes) = setores_100_porcento_por_periodo(semestre,dados)
   return(setores_media_acoes)
 }
+
+# indice_setor = 2 # 1 eh a bovespa
+# dados_bovespa_setores = beta_series_temporais
+
+calcula_risco_beta_sem_periodo = function(indice_setor,dados_bovespa_setores){
+  setor = names(dados_bovespa_setores)[indice_setor]
+  acao = dados_bovespa_setores[,indice_setor]
+  ibovespa = dados_bovespa_setores[,"BVSP"]
+  variacoes_acao = c()
+  variacoes_ibovespa = c()
+  for(i in 1:(length(acao)-1)){
+    variacoes_acao[i] = ((acao[i+1]/acao[i])-1)*100
+    variacoes_ibovespa[i] = ((ibovespa[i+1]/ibovespa[i])-1)*100
+  }
+  # plot(variacoes_ibovespa)
+  variancia = var(variacoes_ibovespa)
+  covariancia = cov(variacoes_ibovespa,variacoes_acao)
+  beta = covariancia/variancia
+  #   data.frame(setor = setor,beta = beta)
+  #   data.frame(beta = beta)
+  beta
+}
+
+
 
 calcula_risco_beta = function(indice_setor,periodo,dados_bovespa_setores){
   setor = names(dados_bovespa_setores)[indice_setor]

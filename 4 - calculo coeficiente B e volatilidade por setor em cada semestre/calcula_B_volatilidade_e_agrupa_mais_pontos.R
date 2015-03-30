@@ -3,8 +3,7 @@ source("../1_funcoes.R")
 
 dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_com_95_IBOVESPA.csv")
 names(dados)
-# eliminação da ibovespa
-dados = dados[,-2]
+
 
 #Datas precisam estar da mais recente para a mais antiga
 dados = inverte_indices_data_frame(dados)
@@ -13,6 +12,23 @@ dados = inverte_indices_data_frame(dados)
 dados = dados[,-1]
 
 series_temporais_setores = calcula_series_temporais_dos_setores(dados)
+
+##################### BETA #######################
+beta_series_temporais_setores = cbind(data.frame(BVSP = dados$X.BVSP),series_temporais_setores)
+
+#precisa fazer o janelamento
+
+##################################################
+# eliminação da ibovespa
+dados = dados[,-1]
+
+
+# serie_temporal_normalizada = c()
+# serie_temporal = c()
+# coluna = 1
+# for(i in 1:(nrow(series_temporais_setores)-1)) {
+#   serie_temporal_normalizada[i] = serie_temporal   
+# }
 # par(mfrow=c(3,3))
 # plot(main = names(series_temporais_setores)[1],series_temporais_setores[,1],ylab="valor")
 # plot(main = names(series_temporais_setores)[2],series_temporais_setores[,2],ylab="valor")
@@ -64,33 +80,41 @@ colunas = c()
 for(i in 1:nrow(janelamentos_indices)){
   #   serie_retornos_normalizado = dado_semestre_retorna_media_serie_retornos_por_setor(periodo,dados)
   series_temporais = series_temporais_setores[janelamentos_indices$inicio[i]:janelamentos_indices$fim[i],]
+  beta_series_temporais = beta_series_temporais_setores[janelamentos_indices$inicio[i]:janelamentos_indices$fim[i],]
   #   dado_semestre_retorna_media_serie_retornos_por_setor_sem_periodo
   
   #   plot(serie,type="l")
   for(coluna in 1:length(names(series_temporais))){
-    #             coluna = 1
+    #          coluna = 1
     colunas[j] = names(series_temporais)[coluna]
     serie = series_temporais[,coluna]
     ############ VaR = Value At Risk #############
     
     #probabilidade de perda_anormal% de perdas anormais
-    #     perda_anormal = .05
-    z_1 = qnorm(.01)
-    z_5= qnorm(.05)
-    z_10 = qnorm(.1)
+    #     z_1 = qnorm(.01)
+    #     z_5= qnorm(.05)
+    #     z_10 = qnorm(.1)
+    #     var_1 = mean(serie) + z_1 * sd(serie)
+    #     var_5 = mean(serie) + z_5 * sd(serie)
+    #     var_10 = mean(serie) + z_10 * sd(serie)
     
-    var_1 = mean(serie) + z_1 * sd(serie)
-    var_5 = mean(serie) + z_5 * sd(serie)
-    var_10 = mean(serie) + z_10 * sd(serie)
+    beta = calcula_risco_beta_sem_periodo(indice_setor = coluna + 1,beta_series_temporais)
+    #         var_1 = mean(serie) - sqrt(var(serie))*qnorm(.99)
+    #         var_5 = mean(serie) - sqrt(var(serie))*qnorm(.95)
+    #         var_10 = mean(serie) - sqrt(var(serie))*qnorm(.9)
+    ###########################################
+    #     z_99 = qnorm(.99)
+    #     z_95= qnorm(.95)
+    #     z_90 = qnorm(.9)
+    #     
+    #     var_1 = mean(serie) - z_99 * sqrt(calcula_volatilidade(serie))
+    #     var_5 = mean(serie) - z_95 * sqrt(calcula_volatilidade(serie))
+    #     var_10 = mean(serie) - z_90 * sqrt(calcula_volatilidade(serie))
+    ##################################3
     
-    
-    #     var_1 = mean(serie) - sqrt(var(serie))*qnorm(.99)
-    #     var_5 = mean(serie) - sqrt(var(serie))*qnorm(.95)
-    #     var_10 = mean(serie) - sqrt(var(serie))*qnorm(.9)
-    
-    #     var_1 = as.numeric(VaR(serie,p=.99,method "modified"))
-    #     var_5 =  as.numeric(VaR(serie,p=.95,method="modified"))
-    #     var_10 =  as.numeric(VaR(serie,p=.9,method ="modified"))
+    #   var_1 = as.numeric(VaR(serie,p=.99,method = "gaussian"))
+    #    var_5 =  as.numeric(VaR(serie,p=.95,method="gaussian"))
+    #    var_10 =  as.numeric(VaR(serie,p=.9,method ="gaussian"))
     ##############################################
     
     
@@ -102,8 +126,10 @@ for(i in 1:nrow(janelamentos_indices)){
     #     colnames(eixo_x_y) = c("eixo_x_frequencias","alvo","previsao","sse","a","coeficiente_B","volatilidade","i")
     #     
     ###### OK #####
-    eixo_x_y = rbind(eixo_x_y, cbind(sse,a,coeficiente_B,volatilidade,grupo,var_1,var_5,var_10))
-    colnames(eixo_x_y) = c("sse","a","coeficiente_B","volatilidade","grupo","var_1","var_5","var_10")
+    #     eixo_x_y = rbind(eixo_x_y, cbind(sse,a,coeficiente_B,volatilidade,grupo,var_1,var_5,var_10))
+    #     colnames(eixo_x_y) = c("sse","a","coeficiente_B","volatilidade","grupo","var_1","var_5","var_10")
+    eixo_x_y = rbind(eixo_x_y, cbind(sse,a,coeficiente_B,volatilidade,grupo,beta))
+    colnames(eixo_x_y) = c("sse","a","coeficiente_B","volatilidade","grupo","beta")
     ###############
     ###### ADAPTACAO ######
     #     eixo_x_y = rbind(eixo_x_y, cbind(eixo_x_frequencias,alvo,previsao,sse,a,coeficiente_B,volatilidade,i))
@@ -124,21 +150,43 @@ for(i in 1:nrow(janelamentos_indices)){
 
 eixo_x_y$setor = colunas[1:nrow(eixo_x_y)]
 eixo_x_y$b_volatilidade = eixo_x_y$coeficiente_B*eixo_x_y$volatilidade
-cor(data.frame(eixo_x_y$a,eixo_x_y$coeficiente_B,eixo_x_y$volatilidade,eixo_x_y$var_1,eixo_x_y$var_5,eixo_x_y$var_10))
+# cor(data.frame(eixo_x_y$a,eixo_x_y$coeficiente_B,eixo_x_y$volatilidade,eixo_x_y$var_1,eixo_x_y$var_5,eixo_x_y$var_10))
 
+# correlacao = data.frame(beta = eixo_x_y$beta,b = eixo_x_y$coeficiente_B,grupo = eixo_x_y$grupo)
+# 
+# teste = function(entrada){
+#   #   return(cor.test(entrada[,1],(entrada[,2]))$estimate)
+#   #   return(cor.test(entrada[,1],(entrada[,2]),method="kendall")$estimate)
+#   return(cor.test(entrada[,1],(entrada[,2]),method="spearman")$estimate)
+#   #   return(cov(entrada[,1],entrada[,2]))#$estimate
+# }
+# saida = data.frame()
+# i=1
+# for(i in 1:length(unique(correlacao$grupo))){
+#   valor_correlacao = teste(subset(correlacao,correlacao$grupo==i))
+#   #   print(paste("Grupo: ",i," Correlacao: ",valor_correlacao))
+#   saida = rbind(saida,data.frame(grupo = i,valor_correlacao = valor_correlacao))
+# }
+# hist(saida$valor_correlacao)
+# boxplot(saida$valor_correlacao)
+
+
+# resultado = data.frame(eixo_x_y$a,eixo_x_y$coeficiente_B,eixo_x_y$volatilidade,eixo_x_y$var_1,eixo_x_y$var_5,eixo_x_y$var_10)
+# cor.test(resultado$eixo_x_y.coeficiente_B,resultado$eixo_x_y.var_5,method = "spearman")
+# plot(resultado$eixo_x_y.coeficiente_B,resultado$eixo_x_y.var_5)
 
 
 
 # write.table(eixo_x_y,row.names=F,file="VaR.csv")
 
 
-plot(eixo_x_y$coeficiente_B,type="l",ylim=c(-2,3))
-lines(eixo_x_y$var_1,col="red")
-lines(eixo_x_y$var_5,col="blue")
-lines(eixo_x_y$var_10,col="green")
-
-nrow(eixo_x_y)
-nrow(na.omit(eixo_x_y))
+# plot(eixo_x_y$coeficiente_B,type="l",ylim=c(-2,3))
+# lines(eixo_x_y$var_1,col="red")
+# lines(eixo_x_y$var_5,col="blue")
+# lines(eixo_x_y$var_10,col="green")
+# 
+# nrow(eixo_x_y)
+# nrow(na.omit(eixo_x_y))
 
 
 
@@ -375,6 +423,8 @@ dev.off()
 plot(eixo_x_y$coeficiente_B~eixo_x_y$volatilidade,xlab="Volatility",ylab="Coefficient B")
 # 
 # 
+# dados = eixo_x_y
+# k =3
 retorna_cluster = function(dados,k){
   #   dados = eixo_x_y
   #   k = 3
