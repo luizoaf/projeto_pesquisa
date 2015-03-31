@@ -85,7 +85,7 @@ for(i in 1:nrow(janelamentos_indices)){
   
   #   plot(serie,type="l")
   for(coluna in 1:length(names(series_temporais))){
-    #          coluna = 1
+    #              coluna = 1
     colunas[j] = names(series_temporais)[coluna]
     serie = series_temporais[,coluna]
     ############ VaR = Value At Risk #############
@@ -99,6 +99,24 @@ for(i in 1:nrow(janelamentos_indices)){
     #     var_10 = mean(serie) + z_10 * sd(serie)
     
     beta = calcula_risco_beta_sem_periodo(indice_setor = coluna + 1,beta_series_temporais)
+    
+    #### b e beta ####
+    #     ibovespa = beta_series_temporais[,"BVSP"]
+    #     variacoes_ibovespa = c()
+    #     for(i in 1:(length(ibovespa)-1)){
+    #       #       variacoes_acao[i] = ((acao[i+1]/acao[i])-1)*100
+    #       variacoes_ibovespa[i] = ((ibovespa[i+1]/ibovespa[i])-1)*100
+    #     }
+    #     # plot(variacoes_ibovespa)
+    variancia = var(beta_series_temporais$BVSP)
+    media = mean(beta_series_temporais$BVSP)
+    #     covariancia = cov(variacoes_ibovespa,variacoes_acao)
+    #     beta = covariancia/variancia
+    
+    ####################
+    
+    #     media = mean(beta_series_temporais[,"BVSP"])
+    #     variancia = var(beta_series_temporais[,"BVSP"])
     #         var_1 = mean(serie) - sqrt(var(serie))*qnorm(.99)
     #         var_5 = mean(serie) - sqrt(var(serie))*qnorm(.95)
     #         var_10 = mean(serie) - sqrt(var(serie))*qnorm(.9)
@@ -128,8 +146,8 @@ for(i in 1:nrow(janelamentos_indices)){
     ###### OK #####
     #     eixo_x_y = rbind(eixo_x_y, cbind(sse,a,coeficiente_B,volatilidade,grupo,var_1,var_5,var_10))
     #     colnames(eixo_x_y) = c("sse","a","coeficiente_B","volatilidade","grupo","var_1","var_5","var_10")
-    eixo_x_y = rbind(eixo_x_y, cbind(sse,a,coeficiente_B,volatilidade,grupo,beta))
-    colnames(eixo_x_y) = c("sse","a","coeficiente_B","volatilidade","grupo","beta")
+    eixo_x_y = rbind(eixo_x_y, cbind(sse,a,coeficiente_B,volatilidade,grupo,beta,media,variancia))
+    colnames(eixo_x_y) = c("sse","a","coeficiente_B","volatilidade","grupo","beta","media","variancia")
     ###############
     ###### ADAPTACAO ######
     #     eixo_x_y = rbind(eixo_x_y, cbind(eixo_x_frequencias,alvo,previsao,sse,a,coeficiente_B,volatilidade,i))
@@ -150,6 +168,48 @@ for(i in 1:nrow(janelamentos_indices)){
 
 eixo_x_y$setor = colunas[1:nrow(eixo_x_y)]
 eixo_x_y$b_volatilidade = eixo_x_y$coeficiente_B*eixo_x_y$volatilidade
+
+setor_Beta_b = data.frame(setor=c(),beta =c())
+for(setor in unique(eixo_x_y$setor)){
+  analise = eixo_x_y[eixo_x_y$setor==as.character(setor),]
+  # 
+  # relacao_b_beta = cov(eixo_x_y$coeficiente_B,eixo_x_y$media)/eixo_x_y$variancia
+  # boxplot(relacao_b_beta)
+  
+  # plot(analise$media)
+  # plot(eixo_x_y$variancia)
+  
+  coeficiente_B = analise$coeficiente_B
+  variacoes_coeficiente_B = c()
+  for(i in 1:(length(coeficiente_B)-1)){
+    #       variacoes_acao[i] = ((acao[i+1]/acao[i])-1)*100
+    variacoes_coeficiente_B[i] = ((coeficiente_B[i+1]/coeficiente_B[i])-1)*100
+  }
+  
+  ibovespa = analise$media
+  variacoes_ibovespa = c()
+  for(i in 1:(length(ibovespa)-1)){
+    #       variacoes_acao[i] = ((acao[i+1]/acao[i])-1)*100
+    variacoes_ibovespa[i] = ((ibovespa[i+1]/ibovespa[i])-1)*100
+  }
+  # plot(variacoes_ibovespa)
+  variancia = var(variacoes_ibovespa)
+  # plot(variacoes_coeficiente_B)
+  # variancia = var(variacoes_coeficiente_B)
+  # media = mean(variacoes_coeficiente_B)
+  
+  saida = cov(variacoes_ibovespa,variacoes_coeficiente_B)/(variancia)
+  df = data.frame(setor=setor,beta =saida)
+  setor_Beta_b = rbind(setor_Beta_b,df)
+}
+
+
+
+cor(saida,])
+boxplot(saida)
+
+plot(variacoes_coeficiente_B,type="l")
+lines(eixo_x_y$media,col=2)
 # cor(data.frame(eixo_x_y$a,eixo_x_y$coeficiente_B,eixo_x_y$volatilidade,eixo_x_y$var_1,eixo_x_y$var_5,eixo_x_y$var_10))
 
 # correlacao = data.frame(beta = eixo_x_y$beta,b = eixo_x_y$coeficiente_B,grupo = eixo_x_y$grupo)
