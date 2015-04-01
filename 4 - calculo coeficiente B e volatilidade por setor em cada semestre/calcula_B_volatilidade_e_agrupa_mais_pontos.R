@@ -2,7 +2,7 @@ setwd("C:/Users/V1d4 L0k4/Desktop/Projetos SourceTree/4 - calculo coeficiente B 
 source("../1_funcoes.R")
 
 dados = read.csv(file="papeis_da_ibovespa_2008_a_2014_com_95_IBOVESPA.csv")
-names(dados)
+# names(dados)
 
 
 #Datas precisam estar da mais recente para a mais antiga
@@ -12,7 +12,7 @@ dados = inverte_indices_data_frame(dados)
 dados = dados[,-1]
 
 series_temporais_setores = calcula_series_temporais_dos_setores(dados)
-
+dados_bovespa = data.frame(BVSP = dados$X.BVSP)
 ##################### BETA #######################
 beta_series_temporais_setores = cbind(data.frame(BVSP = dados$X.BVSP),series_temporais_setores)
 
@@ -41,7 +41,7 @@ dados = dados[,-1]
 # head(series_temporais_setores)
 
 series_temporais_setores = cria_serie_retornos(series_temporais_setores)
-
+dados_bovespa = funcao_modulos_das_diferencas(dados_bovespa)
 # 
 # par(mfrow=c(3,3))
 # plot(main = names(series_temporais_setores)[1],series_temporais_setores[,1],ylab="valor",type="l")
@@ -72,6 +72,7 @@ janelamentos_indices = janelamentos_indices[janelamentos_indices$fim<=total_dias
 # write.table(x = janelamentos_indices,file="janelamentos_indices.csv",row.names=F)
 
 eixo_x_y = data.frame()
+bovespa = data.frame()
 # setor = 1
 j=1
 grupo =1
@@ -81,11 +82,12 @@ for(i in 1:nrow(janelamentos_indices)){
   #   serie_retornos_normalizado = dado_semestre_retorna_media_serie_retornos_por_setor(periodo,dados)
   series_temporais = series_temporais_setores[janelamentos_indices$inicio[i]:janelamentos_indices$fim[i],]
   beta_series_temporais = beta_series_temporais_setores[janelamentos_indices$inicio[i]:janelamentos_indices$fim[i],]
+  bovespa_janelamento = dados_bovespa[janelamentos_indices$inicio[i]:janelamentos_indices$fim[i],]
   #   dado_semestre_retorna_media_serie_retornos_por_setor_sem_periodo
   
   #   plot(serie,type="l")
   for(coluna in 1:length(names(series_temporais))){
-    #              coluna = 1
+    #                  coluna = 1
     colunas[j] = names(series_temporais)[coluna]
     serie = series_temporais[,coluna]
     ############ VaR = Value At Risk #############
@@ -149,6 +151,10 @@ for(i in 1:nrow(janelamentos_indices)){
     #     colnames(eixo_x_y) = c("sse","a","coeficiente_B","volatilidade","grupo","var_1","var_5","var_10")
     eixo_x_y = rbind(eixo_x_y, cbind(sse,a,coeficiente_B,volatilidade,grupo,beta,media_bovespa,media_setor))
     colnames(eixo_x_y) = c("sse","a","coeficiente_B","volatilidade","grupo","beta","media_bovespa","media_setor")
+    
+    serie = bovespa_janelamento
+    source("previsao_exponencial.R")
+    bovespa = rbind(bovespa,cbind(coeficiente_B,volatilidade,a))
     ###############
     ###### ADAPTACAO ######
     #     eixo_x_y = rbind(eixo_x_y, cbind(eixo_x_frequencias,alvo,previsao,sse,a,coeficiente_B,volatilidade,i))
@@ -169,6 +175,30 @@ for(i in 1:nrow(janelamentos_indices)){
 
 eixo_x_y$setor = colunas[1:nrow(eixo_x_y)]
 eixo_x_y$b_volatilidade = eixo_x_y$coeficiente_B*eixo_x_y$volatilidade
+
+eixo_x_y$bovespa_coeficiente_B = bovespa$coeficiente_B
+eixo_x_y$bovespa_volatilidde = bovespa$volatilidade
+eixo_x_y$bovespa_a = bovespa$a
+
+setores = unique(eixo_x_y$setor)
+par(mfrow = c(2,2))
+# coluna_setor = 2
+for(coluna_setor in 5:8){
+  setor_1 = eixo_x_y[eixo_x_y$setor==setores[coluna_setor],]
+  
+  #B do setor
+  plot(main=setores[coluna_setor],setor_1$coeficiente_B,type="l",ylim = c(0,4),lwd = 2,ylab="Valores",xlab="Meses")
+  #B da bovespa
+  lines(setor_1$bovespa_coeficiente_B,col="red",lwd = 2)
+  #volatilidade do setor
+  lines(setor_1$volatilidade,col="blue",lwd = 2)
+  #beta do setor
+  lines(setor_1$beta,col="green",lwd = 2)
+  
+  legend("topright", inset=.05, c("B_Setor","B_Bovespa","Volatilidade","Beta_Setor"), lwd= 3,col = c("black","red","blue","green"), horiz=FALSE)
+}
+
+
 
 setor_Beta_b = data.frame(setor=c(),beta_b =c(),beta=c())
 for(setor in unique(eixo_x_y$setor)){
@@ -212,12 +242,12 @@ for(setor in unique(eixo_x_y$setor)){
 }
 
 
+# 
+# cor(saida,])
+# boxplot(saida)
 
-cor(saida,])
-boxplot(saida)
-
-plot(variacoes_coeficiente_B,type="l")
-lines(eixo_x_y$media,col=2)
+# plot(setor_Beta_b$beta_b,type="p",ylim=c(0,3))
+# points(setor_Beta_b$beta,col=2)
 # cor(data.frame(eixo_x_y$a,eixo_x_y$coeficiente_B,eixo_x_y$volatilidade,eixo_x_y$var_1,eixo_x_y$var_5,eixo_x_y$var_10))
 
 # correlacao = data.frame(beta = eixo_x_y$beta,b = eixo_x_y$coeficiente_B,grupo = eixo_x_y$grupo)
